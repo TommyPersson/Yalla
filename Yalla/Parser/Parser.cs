@@ -16,10 +16,13 @@ namespace Yalla.Parser
             this.tokenizer = tokenizer;
         }
 
-        public ListNode Parse(string input)
+        public IList<AstNode> Parse(string input)
         {
-            var tokens = tokenizer.Tokenize(input);
+            return Parse(tokenizer.Tokenize(input));
+        }
 
+        public IList<AstNode> Parse(IEnumerable<Token> tokens)
+        {
             Stack<ListNode> lists = new Stack<ListNode>();
 
             var result = new ListNode();
@@ -61,8 +64,7 @@ namespace Yalla.Parser
                 }
             }
 
-
-            return result;
+            return result.Children();
         }
 
         public AstNode Parse(Token token)
@@ -79,11 +81,6 @@ namespace Yalla.Parser
                     return new SymbolNode(token.Value);
             }
 
-            return null;
-        }
-
-        public AstNode Evaluate(AstNode yobject, IDictionary<SymbolNode, AstNode> env)
-        {
             return null;
         }
     }

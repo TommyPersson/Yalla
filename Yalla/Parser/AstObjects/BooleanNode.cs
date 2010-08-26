@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class BooleanNode : AtomNode, IEquatable<BooleanNode>
+    public class BooleanNode : AstNode, IEquatable<BooleanNode>
     {
         private static IDictionary<bool, BooleanNode> nodes = new Dictionary<bool, BooleanNode>
                                                                   {

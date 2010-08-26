@@ -2,7 +2,7 @@
 
 namespace Yalla.Parser.AstObjects
 {
-    public class SymbolNode : AtomNode, IEquatable<SymbolNode>
+    public class SymbolNode : AstNode, IEquatable<SymbolNode>
     {
 
         public SymbolNode(string name)

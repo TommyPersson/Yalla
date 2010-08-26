@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class ObjectNode : AtomNode
+    public class ObjectNode : AstNode
     {
         public ObjectNode(object obj)
         {

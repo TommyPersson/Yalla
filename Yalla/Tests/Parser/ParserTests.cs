@@ -29,12 +29,12 @@ namespace Yalla.Tests.Parser
         [Test]
         public void ShallParseDoubles()
         {
-            var result = Parser.Parse("123.456");
+            var result = Parser.Parse("3.4");
 
             var doubleNode = result.First() as DoubleNode;
 
             Assert.IsNotNull(doubleNode);
-            Assert.AreEqual(123.456, doubleNode.Value);
+            Assert.AreEqual(3.4, doubleNode.Value);
         }
 
         [Test]

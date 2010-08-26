@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Evaluator\Applier.cs" />
+    <Compile Include="Evaluator\Environment.cs" />
     <Compile Include="Evaluator\Evaluator.cs" />
     <Compile Include="Parser\AstObjects\AstNode.cs" />
     <Compile Include="Parser\AstObjects\BooleanNode.cs" />
@@ -63,7 +65,6 @@
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Parser\AstObjects\SymbolNode.cs" />
-    <Compile Include="Parser\AstObjects\AtomNode.cs" />
     <Compile Include="Parser\AstObjects\DoubleNode.cs" />
     <Compile Include="Parser\AstObjects\IntegerNode.cs" />
     <Compile Include="Parser\AstObjects\ListNode.cs" />

@@ -5,13 +5,15 @@ using System.Text;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class FunctionNode : AstNode
+    public abstract class FunctionNode : AstNode
     {
-        private static readonly IDictionary<string, PrimitiveFunctionNode> PrimitiveFunctions =
-            new Dictionary<string, PrimitiveFunctionNode>
+        public static readonly IDictionary<string, FunctionNode> PrimitiveFunctions =
+            new Dictionary<string, FunctionNode>
                 {
                     { "+", new AddFunctionNode() },
                 };
+
+        public string Symbol { get; protected set; }
 
         public static FunctionNode MakeFunctionNode(string name)
         {
@@ -24,12 +26,7 @@ namespace Yalla.Parser.AstObjects
         }
     }
 
-    public abstract class PrimitiveFunctionNode : FunctionNode
-    {
-        public string Symbol { get; protected set; }
-    }
-
-    public class AddFunctionNode : PrimitiveFunctionNode
+    public class AddFunctionNode : FunctionNode
     {
         public AddFunctionNode()
         {
@@ -37,7 +34,7 @@ namespace Yalla.Parser.AstObjects
         }
     }
 
-    public class AndFunctionNode : PrimitiveFunctionNode
+    public class AndFunctionNode : FunctionNode
     {
         public AndFunctionNode()
         {
@@ -45,7 +42,7 @@ namespace Yalla.Parser.AstObjects
         }
     }
 
-    public class OrFunctionNode : PrimitiveFunctionNode
+    public class OrFunctionNode : FunctionNode
     {
         public OrFunctionNode()
         {
@@ -53,7 +50,7 @@ namespace Yalla.Parser.AstObjects
         }
     }
 
-    public class NotFunctionNode : PrimitiveFunctionNode
+    public class NotFunctionNode : FunctionNode
     {
         public NotFunctionNode()
         {
@@ -61,7 +58,7 @@ namespace Yalla.Parser.AstObjects
         }
     }
 
-    public class EqualFunctionNode : PrimitiveFunctionNode
+    public class EqualFunctionNode : FunctionNode
     {
         public EqualFunctionNode()
         {

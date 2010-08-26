@@ -15,7 +15,7 @@ namespace Yalla
             var parser = new Parser.Parser(tokenizer);
             var result = parser.Parse("(123.123 '(\"Hello World!\" 1 2 3 asdf (.method object)))");
 
-            PrettyPrinter.PrettyPrint(result);
+            PrettyPrinter.PrettyPrint(result.First());
 
             Console.ReadKey();
         }
