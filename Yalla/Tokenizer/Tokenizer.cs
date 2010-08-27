@@ -8,15 +8,15 @@ namespace Yalla.Tokenizer
 {
     public class Tokenizer
     {
+        private readonly char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=' };
+
         private string inputBuffer;
         private int inputPosition;
         private char? lookAhead;
 
         private int currentColumn;
         private int currentRow;
-
-        private char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=' };
-
+        
         public IEnumerable<Token> Tokenize(string input)
         {
             Initialize(input);
@@ -24,7 +24,11 @@ namespace Yalla.Tokenizer
 
             while (HasMoreTokens())
             {
-                tokens.Add(GetNextToken());
+                var token = GetNextToken();
+                if (token != null)
+                {
+                    tokens.Add(token);                    
+                }
             }
 
             tokens.Add(new Token(Token.TokenType.EndOfFile, "<EOF>", currentColumn, currentRow));
@@ -34,7 +38,7 @@ namespace Yalla.Tokenizer
 
         private void Initialize(string input)
         {
-            inputBuffer = input;
+            inputBuffer = input.Replace('\r', '\n');
             inputPosition = 0;
             lookAhead = inputBuffer.ElementAt(inputPosition);
         }
@@ -82,7 +86,7 @@ namespace Yalla.Tokenizer
                 }
             }
 
-            throw new SyntaxErrorException("Unexpected EOF at row " + currentRow + ", column " + currentColumn);
+            return null;
         }
 
         private Token ParseString()

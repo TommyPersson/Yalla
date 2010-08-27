@@ -1,8 +1,5 @@
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Yalla
 {
@@ -10,14 +7,21 @@ namespace Yalla
     {
         public static void Main(string[] args)
         {
-            var tokenizer = new Tokenizer.Tokenizer();
+            var evaluator = new Evaluator.Evaluator(new Parser.Parser(new Tokenizer.Tokenizer()));
+         
+            Console.Out.WriteLine("End you statements with <Enter> <Ctrl-Z> <Enter>. Quit with <Ctrl-C>.");
 
-            var parser = new Parser.Parser(tokenizer);
-            var result = parser.Parse("(123.123 '(\"Hello World!\" 1 2 3 asdf (.method object)))");
+            while (true)
+            {
+                Console.Out.WriteLine();
+                Console.Out.Write("yalla> ");
 
-            PrettyPrinter.PrettyPrint(result.First());
+                var input = Console.In.ReadToEnd();
 
-            Console.ReadKey();
+                Console.Out.Write("=> ");
+                PrettyPrinter.PrettyPrint(evaluator.Evaluate(input));
+                Console.Out.WriteLine();         
+            }
         }
     }
 }
