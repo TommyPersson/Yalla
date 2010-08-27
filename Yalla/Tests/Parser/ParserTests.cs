@@ -32,7 +32,7 @@ namespace Yalla.Tests.Parser
         {
             var result = Parser.Parse("3.4");
 
-            var doubleNode = result.First() as DoubleNode;
+            var doubleNode = result.First() as DecimalNode;
 
             Assert.IsNotNull(doubleNode);
             Assert.AreEqual(3.4, doubleNode.Value);

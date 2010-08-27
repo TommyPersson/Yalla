@@ -74,7 +74,7 @@ namespace Yalla.Parser
                 case Token.TokenType.Integer:
                     return new IntegerNode(int.Parse(token.Value));
                 case Token.TokenType.Double:
-                    return new DoubleNode(float.Parse(token.Value, CultureInfo.InvariantCulture));
+                    return new DecimalNode(decimal.Parse(token.Value, CultureInfo.InvariantCulture));
                 case Token.TokenType.String:
                     return new StringNode(token.Value);
                 case Token.TokenType.Symbol:

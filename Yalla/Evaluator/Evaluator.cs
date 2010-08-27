@@ -26,7 +26,7 @@ namespace Yalla.Evaluator
                     { typeof(ListNode), (x,y,z) => x.Evaluate((ListNode)y,z) },
                     { typeof(BooleanNode), (x,y,z) => x.Evaluate((BooleanNode)y,z) },
                     { typeof(IntegerNode), (x,y,z) => x.Evaluate((IntegerNode)y,z) },
-                    { typeof(DoubleNode), (x,y,z) => x.Evaluate((DoubleNode)y,z) },
+                    { typeof(DecimalNode), (x,y,z) => x.Evaluate((DecimalNode)y,z) },
                     { typeof(StringNode), (x,y,z) => x.Evaluate((StringNode)y,z) },
                     { typeof(ObjectNode), (x,y,z) => x.Evaluate((ObjectNode)y,z) },
                     { typeof(QuoteNode), (x,y,z) => x.Evaluate((QuoteNode)y,z) },
@@ -93,7 +93,7 @@ namespace Yalla.Evaluator
             return node;
         }
 
-        public AstNode Evaluate(DoubleNode node, Environment environment)
+        public AstNode Evaluate(DecimalNode node, Environment environment)
         {
             return node;
         }

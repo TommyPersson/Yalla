@@ -34,12 +34,12 @@ namespace Yalla.Evaluator
         {
             var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment));
 
-            if (!args.All(x => x.GetType() == typeof(IntegerNode) || x.GetType() == typeof(DoubleNode)))
+            if (!args.All(x => x.GetType() == typeof(IntegerNode) || x.GetType() == typeof(DecimalNode)))
             {
                 throw new ArgumentException("'+' may only take integer or double values!");
             }
 
-            double result = 0;
+            decimal result = 0;
 
             foreach (var arg in args)
             {
@@ -48,15 +48,15 @@ namespace Yalla.Evaluator
                     result += ((IntegerNode)arg).Value;
                 }
 
-                if (arg is DoubleNode)
+                if (arg is DecimalNode)
                 {
-                    result += ((DoubleNode) arg).Value;
+                    result += ((DecimalNode) arg).Value;
                 }
             }
 
             return ((result % 1) == 0)
                        ? (AstNode)new IntegerNode(Convert.ToInt32(result))
-                       : new DoubleNode(result);
+                       : new DecimalNode(result);
         }
 
         public AstNode Apply(AndFunctionNode function, ListNode arguments, Environment environment)

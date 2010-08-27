@@ -11,7 +11,7 @@ namespace Yalla
         private static readonly IDictionary<Type, Action<AstNode>> NodeTypeDispatch =
             new Dictionary<Type, Action<AstNode>>
                 {
-                    { typeof(DoubleNode), x => PrettyPrint((DoubleNode)x) },
+                    { typeof(DecimalNode), x => PrettyPrint((DecimalNode)x) },
                     { typeof(IntegerNode), x => PrettyPrint((IntegerNode)x) },
                     { typeof(QuoteNode), x => PrettyPrint((QuoteNode)x) },
                     { typeof(StringNode), x => PrettyPrint((StringNode)x) },
@@ -26,7 +26,7 @@ namespace Yalla
             NodeTypeDispatch[node.GetType()].Invoke(node);
         }
 
-        public static void PrettyPrint(DoubleNode node)
+        public static void PrettyPrint(DecimalNode node)
         {
             Console.Write(node.Value);
         }

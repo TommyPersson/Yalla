@@ -82,7 +82,7 @@ namespace Yalla.Tokenizer
                             return ParseNumber();
                         }
 
-                        throw new SyntaxErrorException("Invalid input at row " + currentRow + ", column " + currentColumn);
+                        throw new SyntaxErrorException("Invalid input (" + lookAhead + ") at row " + currentRow + ", column " + currentColumn);
                 }
             }
 

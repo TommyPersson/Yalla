@@ -66,7 +66,7 @@
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Parser\AstObjects\SymbolNode.cs" />
-    <Compile Include="Parser\AstObjects\DoubleNode.cs" />
+    <Compile Include="Parser\AstObjects\DecimalNode.cs" />
     <Compile Include="Parser\AstObjects\IntegerNode.cs" />
     <Compile Include="Parser\AstObjects\ListNode.cs" />
   </ItemGroup>

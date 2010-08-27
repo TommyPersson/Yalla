@@ -23,7 +23,7 @@ namespace Yalla.Tests.Evaluator
         public void NumberShallEvaluateToNumbers()
         {
             var result = Evaluator.Evaluate("1") as IntegerNode;
-            var result2 = Evaluator.Evaluate("1.1") as DoubleNode;
+            var result2 = Evaluator.Evaluate("1.1") as DecimalNode;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Value);
@@ -34,10 +34,10 @@ namespace Yalla.Tests.Evaluator
         [Test]
         public void EvaluatorReturnsResultOfLastForm()
         {
-            var result = Evaluator.Evaluate("1 2") as IntegerNode;
+            var result = Evaluator.Evaluate("1 2\n3\n\n") as IntegerNode;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Value);
+            Assert.AreEqual(3, result.Value);
         }
 
         [Test]

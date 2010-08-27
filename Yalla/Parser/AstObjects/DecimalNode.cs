@@ -3,27 +3,27 @@ using System;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class DoubleNode : ObjectNode, IEquatable<DoubleNode>
+    public class DecimalNode : ObjectNode, IEquatable<DecimalNode>
     {
-        public DoubleNode(double value) : base(value)
+        public DecimalNode(decimal value) : base(value)
         {
             Value = value;
         }
 
-        public double Value { get; private set; }
+        public decimal Value { get; private set; }
 
         #region IEquatable
-        public static bool operator ==(DoubleNode left, DoubleNode right)
+        public static bool operator ==(DecimalNode left, DecimalNode right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(DoubleNode left, DoubleNode right)
+        public static bool operator !=(DecimalNode left, DecimalNode right)
         {
             return !Equals(left, right);
         }
 
-        public bool Equals(DoubleNode other)
+        public bool Equals(DecimalNode other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -50,12 +50,12 @@ namespace Yalla.Parser.AstObjects
                 return true;
             }
 
-            if (obj.GetType() != typeof(DoubleNode))
+            if (obj.GetType() != typeof(DecimalNode))
             {
                 return false;
             }
 
-            return Equals((DoubleNode) obj);
+            return Equals((DecimalNode) obj);
         }
 
         public override int GetHashCode()

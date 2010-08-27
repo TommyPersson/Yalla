@@ -10,9 +10,9 @@ namespace Yalla.Parser.AstObjects
                 return new IntegerNode((int)o);
             }
 
-            if (o is double)
+            if (o is decimal)
             {
-                return new DoubleNode((double)o);
+                return new DecimalNode((decimal)o);
             }
 
             if (o is bool)
