@@ -9,10 +9,10 @@ namespace Yalla.Tokenizer
     public class Tokenizer
     {
         private readonly char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=' };
+        private readonly char?[] lookAhead = new char?[2];
 
         private string inputBuffer;
         private int inputPosition;
-        private char? lookAhead;
 
         private int currentColumn;
         private int currentRow;
@@ -40,19 +40,20 @@ namespace Yalla.Tokenizer
         {
             inputBuffer = input.Replace('\r', '\n');
             inputPosition = 0;
-            lookAhead = inputBuffer.ElementAt(inputPosition);
+            lookAhead[0] = inputBuffer.ElementAt(inputPosition);
+            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?)null;
         }
 
         private bool HasMoreTokens()
         {
-            return lookAhead.HasValue;
+            return lookAhead[0].HasValue;
         }
         
         private Token GetNextToken()
         {
-            while (lookAhead != null)
+            while (lookAhead[0].HasValue)
             {
-                switch (lookAhead.Value)
+                switch (lookAhead[0].Value)
                 {
                     case ' ':
                     case '\t':
@@ -72,14 +73,16 @@ namespace Yalla.Tokenizer
                     case '"':
                         return ParseString();
                     default:
-                        if (char.IsLetter(lookAhead.Value) || validSymbolChars.Contains(lookAhead.Value))
-                        {
-                            return ParseSymbol();
-                        }
-                        
-                        if (char.IsDigit(lookAhead.Value))
+                        if ((lookAhead[0].Value == '-' &&
+                             lookAhead[1].HasValue && char.IsDigit(lookAhead[1].Value)) ||
+                            char.IsDigit(lookAhead[0].Value))
                         {
                             return ParseNumber();
+                        }
+
+                        if (char.IsLetter(lookAhead[0].Value) || validSymbolChars.Contains(lookAhead[0].Value))
+                        {
+                            return ParseSymbol();
                         }
 
                         throw new SyntaxErrorException("Invalid input (" + lookAhead + ") at row " + currentRow + ", column " + currentColumn);
@@ -99,9 +102,9 @@ namespace Yalla.Tokenizer
             bool begun = false;
             bool finished = false;
 
-            while (lookAhead.HasValue && !finished)
+            while (lookAhead[0].HasValue && !finished)
             {
-                if (lookAhead == '"')
+                if (lookAhead[0] == '"')
                 {
                     if (!begun)
                     {
@@ -116,7 +119,7 @@ namespace Yalla.Tokenizer
                 }
                 else
                 {
-                    tokenBuffer.Append(lookAhead);
+                    tokenBuffer.Append(lookAhead[0]);
                 }
 
                 Consume();
@@ -139,10 +142,13 @@ namespace Yalla.Tokenizer
 
             bool hasDecimalPoint = false;
 
-            while (lookAhead.HasValue && 
-                   (char.IsDigit(lookAhead.Value) || lookAhead.Value == '.'))
+            tokenBuffer.Append(lookAhead[0].Value);
+            Consume();
+            
+            while (lookAhead[0].HasValue && 
+                   (char.IsDigit(lookAhead[0].Value) || lookAhead[0].Value == '.'))
             {
-                if (lookAhead.Value == '.')
+                if (lookAhead[0].Value == '.')
                 {
                     if (hasDecimalPoint)
                     {
@@ -152,7 +158,7 @@ namespace Yalla.Tokenizer
                     hasDecimalPoint = true;
                 }
 
-                tokenBuffer.Append(lookAhead.Value);
+                tokenBuffer.Append(lookAhead[0].Value);
                 Consume();
             }
 
@@ -167,10 +173,10 @@ namespace Yalla.Tokenizer
             int beginColumn = currentColumn;
             int beginRow = currentRow;
 
-            while (lookAhead.HasValue &&
-                   (char.IsLetter(lookAhead.Value) || char.IsDigit(lookAhead.Value) || validSymbolChars.Contains(lookAhead.Value)))
+            while (lookAhead[0].HasValue &&
+                   (char.IsLetter(lookAhead[0].Value) || char.IsDigit(lookAhead[0].Value) || validSymbolChars.Contains(lookAhead[0].Value)))
             {
-                tokenBuffer.Append(lookAhead.Value);
+                tokenBuffer.Append(lookAhead[0].Value);
                 Consume();
             }
 
@@ -179,10 +185,10 @@ namespace Yalla.Tokenizer
 
         private void ConsumeWhitespace()
         {
-            while (lookAhead == ' ' ||
-                   lookAhead == '\t' ||
-                   lookAhead == '\n' ||
-                   lookAhead == '\r')
+            while (lookAhead[0] == ' ' ||
+                   lookAhead[0] == '\t' ||
+                   lookAhead[0] == '\n' ||
+                   lookAhead[0] == '\r')
             {
                 Consume();
             }
@@ -190,7 +196,7 @@ namespace Yalla.Tokenizer
 
         private void Consume()
         {
-            if (lookAhead == '\n')
+            if (lookAhead[0] == '\n')
             {
                 currentRow++;
                 currentColumn = 0;
@@ -204,11 +210,12 @@ namespace Yalla.Tokenizer
 
             if (inputPosition >= inputBuffer.Length)
             {
-                lookAhead = null;
+                lookAhead[0] = null;
             }
             else
             {
-                lookAhead = inputBuffer.ElementAt(inputPosition);
+                lookAhead[0] = inputPosition < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition) : (char?) null;
+                lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?) null;
             }
         }
     }
