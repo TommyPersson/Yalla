@@ -58,7 +58,6 @@ namespace Yalla.Tokenizer
                     case ' ':
                     case '\t':
                     case '\n':
-                    case '\r':
                         ConsumeWhitespace();
                         break;
                     case '(':
@@ -187,8 +186,7 @@ namespace Yalla.Tokenizer
         {
             while (lookAhead[0] == ' ' ||
                    lookAhead[0] == '\t' ||
-                   lookAhead[0] == '\n' ||
-                   lookAhead[0] == '\r')
+                   lookAhead[0] == '\n')
             {
                 Consume();
             }
@@ -208,15 +206,8 @@ namespace Yalla.Tokenizer
 
             inputPosition++;
 
-            if (inputPosition >= inputBuffer.Length)
-            {
-                lookAhead[0] = null;
-            }
-            else
-            {
-                lookAhead[0] = inputPosition < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition) : (char?) null;
-                lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?) null;
-            }
+            lookAhead[0] = inputPosition < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition) : (char?) null;
+            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?) null;
         }
     }
 }
