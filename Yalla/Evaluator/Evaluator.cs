@@ -45,8 +45,6 @@ namespace Yalla.Evaluator
 
         public void InitializeGlobalEnvironment(Environment environmentExtensions = null)
         {
-            //// TODO: Add primitive functions to global env
-
             if (environmentExtensions != null)
             {
                 foreach (var environmentExtension in environmentExtensions)
