@@ -3,9 +3,9 @@ using System;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class DoubleNode : AstNode, IEquatable<DoubleNode>
+    public class DoubleNode : ObjectNode, IEquatable<DoubleNode>
     {
-        public DoubleNode(double value)
+        public DoubleNode(double value) : base(value)
         {
             Value = value;
         }

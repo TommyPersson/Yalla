@@ -10,6 +10,11 @@ namespace Yalla.Evaluator
             new Environment
                 {
                     { new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"] },
+                    { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
+                    { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
+                    { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
+                    { new SymbolNode("true"), BooleanNode.MakeBoolean(true) },
+                    { new SymbolNode("false"), BooleanNode.MakeBoolean(false) },
                 };
 
         private readonly Parser.Parser parser;
@@ -27,6 +32,7 @@ namespace Yalla.Evaluator
                     { typeof(QuoteNode), (x,y,z) => x.Evaluate((QuoteNode)y,z) },
                     { typeof(SymbolNode), (x,y,z) => x.Evaluate((SymbolNode)y,z) },
                     { typeof(FunctionNode), (x,y,z) => x.Evaluate((FunctionNode)y,z) },
+                    { typeof(NativeMethodFunctionNode), (x,y,z) => x.Evaluate((NativeMethodFunctionNode)y,z) },
                 };
 
         public Evaluator(Parser.Parser parser, Environment environmentExtensions = null)
@@ -104,6 +110,11 @@ namespace Yalla.Evaluator
             return node;
         }
 
+        public AstNode Evaluate(NativeMethodFunctionNode node, Environment environment)
+        {
+            return node;
+        }
+
         public AstNode Evaluate(QuoteNode node, Environment environment)
         {
             return node.InnerValue;
@@ -114,6 +125,11 @@ namespace Yalla.Evaluator
             if (environment.ContainsKey(node))
             {
                 return environment[node];               
+            }
+
+            if (node.Name.StartsWith("."))
+            {
+                return new NativeMethodFunctionNode(node.Name.Substring(1));
             }
 
             throw new ArgumentException("Could not resolve symbol: " + node.Name);

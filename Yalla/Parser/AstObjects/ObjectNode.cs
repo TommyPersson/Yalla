@@ -12,6 +12,6 @@ namespace Yalla.Parser.AstObjects
             Object = obj;
         }
 
-        public object Object { get; private set; }
+        public object Object { get; protected set; }
     }
 }

@@ -59,7 +59,8 @@
     <Compile Include="PrettyPrinter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\Evaluator\EvaluatorTests.cs" />
+    <Compile Include="Tests\Evaluator\EvaluatorTests.Core.cs" />
+    <Compile Include="Tests\Evaluator\EvaluatorTests.PrimitiveFunctions.cs" />
     <Compile Include="Tests\Parser\ParserTests.cs" />
     <Compile Include="Tests\Tokenizer\TokenizerTests.cs" />
     <Compile Include="Tokenizer\Token.cs" />

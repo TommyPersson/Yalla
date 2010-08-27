@@ -1,7 +1,5 @@
-﻿using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Yalla.Parser.AstObjects
 {
@@ -11,6 +9,9 @@ namespace Yalla.Parser.AstObjects
             new Dictionary<string, FunctionNode>
                 {
                     { "+", new AddFunctionNode() },
+                    { "=", new EqualFunctionNode() },
+                    { "and", new AndFunctionNode() },
+                    { "or", new OrFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -21,9 +22,19 @@ namespace Yalla.Parser.AstObjects
             {
                 return PrimitiveFunctions[name];
             }
-
+            
             return null;
         }
+    }
+
+    public class NativeMethodFunctionNode : FunctionNode
+    {
+        public NativeMethodFunctionNode(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; private set; }
     }
 
     public class AddFunctionNode : FunctionNode

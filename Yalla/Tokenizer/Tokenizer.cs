@@ -15,7 +15,7 @@ namespace Yalla.Tokenizer
         private int currentColumn;
         private int currentRow;
 
-        private char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.' };
+        private char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=' };
 
         public IEnumerable<Token> Tokenize(string input)
         {

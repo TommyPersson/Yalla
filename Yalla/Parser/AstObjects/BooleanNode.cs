@@ -5,28 +5,25 @@ using System.Text;
 
 namespace Yalla.Parser.AstObjects
 {
-    public class BooleanNode : AstNode, IEquatable<BooleanNode>
+    public class BooleanNode : ObjectNode, IEquatable<BooleanNode>
     {
-        private static IDictionary<bool, BooleanNode> nodes = new Dictionary<bool, BooleanNode>
-                                                                  {
-                                                                      { true, new BooleanNode(true) },
-                                                                      { false, new BooleanNode(false) },
-                                                                  };
-
-        protected BooleanNode()
-        {
-        }
-
-        private BooleanNode(bool value)
+        private static readonly IDictionary<bool, BooleanNode> Nodes = new Dictionary<bool, BooleanNode>
+                                                                           {
+                                                                               { true, new BooleanNode(true) },
+                                                                               { false, new BooleanNode(false) },
+                                                                           };
+        
+        private BooleanNode(bool value) : base(value)
         {
             Value = value;
+            Object = value;
         }
 
         public bool Value { get; private set; }
 
         public static BooleanNode MakeBoolean(bool value)
         {
-            return nodes[value];
+            return Nodes[value];
         }
 
         #region IEquatable

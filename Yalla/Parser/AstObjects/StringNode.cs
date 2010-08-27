@@ -2,9 +2,9 @@
 
 namespace Yalla.Parser.AstObjects
 {
-    public class StringNode : AstNode, IEquatable<StringNode>
+    public class StringNode : ObjectNode, IEquatable<StringNode>
     {
-        public StringNode(string value)
+        public StringNode(string value) : base(value)
         {
             Value = value;
         }

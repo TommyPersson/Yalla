@@ -8,7 +8,7 @@ using Yalla.Parser.AstObjects;
 namespace Yalla.Tests.Evaluator
 {
     [TestFixture]
-    internal class EvaluatorTests
+    internal partial class EvaluatorTests
     {
         private Yalla.Parser.Parser Parser { get; set; }
 
@@ -18,7 +18,7 @@ namespace Yalla.Tests.Evaluator
         public void Setup()
         {
             Parser = new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer());
-            Evaluator = new Yalla.Evaluator.Evaluator(Parser, null);
+            Evaluator = new Yalla.Evaluator.Evaluator(Parser);
         }
 
         [Test]
@@ -52,6 +52,12 @@ namespace Yalla.Tests.Evaluator
         }
 
         [Test]
+        public void ShallThrowExceptionIfSymbolDoesntExist()
+        {
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("somesym"));
+        }
+
+        [Test]
         public void StringShouldEvaluateToStrings()
         {
             var result = Evaluator.Evaluate("\"Hello World!\"") as StringNode;
@@ -63,10 +69,23 @@ namespace Yalla.Tests.Evaluator
         [Test]
         public void ListsShouldEvaluateAsFunctionCalls()
         {
-            var result = Evaluator.Evaluate("(+ 1 2)") as IntegerNode;
+            var result = Evaluator.Evaluate("(+ 1 2 (+ 3 4))") as IntegerNode;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(10, result.Value);
+        }
+
+        [Test]
+        public void ShallThrowExceptionIfFirstItemInListIsNotAFunction()
+        {
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(1 2 3)"));
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("('1 2 3)"));
+        }
+
+        [Test]
+        public void ShallThrowExceptionIfFunctionDoesntExist()
+        {
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(secret+ 1 2)"));
         }
     }
 }
