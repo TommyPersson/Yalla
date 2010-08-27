@@ -13,8 +13,8 @@ namespace Yalla.Evaluator
                     { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
                     { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
                     { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
-                    { new SymbolNode("true"), BooleanNode.MakeBoolean(true) },
-                    { new SymbolNode("false"), BooleanNode.MakeBoolean(false) },
+                    { new SymbolNode("true"), AstNode.MakeNode(true) },
+                    { new SymbolNode("false"), AstNode.MakeNode(false) },
                 };
 
         private readonly Parser.Parser parser;

@@ -7,24 +7,12 @@ namespace Yalla.Parser.AstObjects
 {
     public class BooleanNode : ObjectNode, IEquatable<BooleanNode>
     {
-        private static readonly IDictionary<bool, BooleanNode> Nodes = new Dictionary<bool, BooleanNode>
-                                                                           {
-                                                                               { true, new BooleanNode(true) },
-                                                                               { false, new BooleanNode(false) },
-                                                                           };
-        
-        private BooleanNode(bool value) : base(value)
+        public BooleanNode(bool value) : base(value)
         {
             Value = value;
-            Object = value;
         }
 
         public bool Value { get; private set; }
-
-        public static BooleanNode MakeBoolean(bool value)
-        {
-            return Nodes[value];
-        }
 
         #region IEquatable
         public static bool operator ==(BooleanNode left, BooleanNode right)

@@ -72,11 +72,11 @@ namespace Yalla.Evaluator
 
                 if (!result.Value)
                 {
-                    return BooleanNode.MakeBoolean(false);
+                    return AstNode.MakeNode(false);
                 }
             }
 
-            return BooleanNode.MakeBoolean(true);
+            return AstNode.MakeNode(true);
         }
 
         public AstNode Apply(OrFunctionNode function, ListNode arguments, Environment environment)

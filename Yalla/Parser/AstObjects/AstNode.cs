@@ -17,7 +17,7 @@ namespace Yalla.Parser.AstObjects
 
             if (o is bool)
             {
-                return BooleanNode.MakeBoolean((bool)o);
+                return new BooleanNode((bool)o);
             }
 
             if (o is string)
