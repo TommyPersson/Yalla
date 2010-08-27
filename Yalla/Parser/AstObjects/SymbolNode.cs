@@ -1,10 +1,10 @@
-﻿using System;
+
+using System;
 
 namespace Yalla.Parser.AstObjects
 {
     public class SymbolNode : AstNode, IEquatable<SymbolNode>
     {
-
         public SymbolNode(string name)
         {
             Name = name;

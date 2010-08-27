@@ -1,26 +1,27 @@
-﻿using System;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Yalla.Parser.AstObjects;
 
 namespace Yalla
 {
     public class PrettyPrinter
     {
-        private static IDictionary<Type, Action<AstNode>> vtable = new Dictionary<Type, Action<AstNode>>()
-                                                                {
-                                                                    { typeof(DoubleNode), x => PrettyPrint((DoubleNode)x) },
-                                                                    { typeof(IntegerNode), x => PrettyPrint((IntegerNode)x) },
-                                                                    { typeof(QuoteNode), x => PrettyPrint((QuoteNode)x) },
-                                                                    { typeof(StringNode), x => PrettyPrint((StringNode)x) },
-                                                                    { typeof(SymbolNode), x => PrettyPrint((SymbolNode)x) },
-                                                                    { typeof(ListNode), x => PrettyPrint((ListNode)x) },
-                                                                };
+        private static readonly IDictionary<Type, Action<AstNode>> NodeTypeDispatch =
+            new Dictionary<Type, Action<AstNode>>
+                {
+                    { typeof(DoubleNode), x => PrettyPrint((DoubleNode)x) },
+                    { typeof(IntegerNode), x => PrettyPrint((IntegerNode)x) },
+                    { typeof(QuoteNode), x => PrettyPrint((QuoteNode)x) },
+                    { typeof(StringNode), x => PrettyPrint((StringNode)x) },
+                    { typeof(SymbolNode), x => PrettyPrint((SymbolNode)x) },
+                    { typeof(ListNode), x => PrettyPrint((ListNode)x) },
+                };
 
         public static void PrettyPrint(AstNode node)
         {
-            vtable[node.GetType()].Invoke(node);
+            NodeTypeDispatch[node.GetType()].Invoke(node);
         }
 
         public static void PrettyPrint(DoubleNode node)

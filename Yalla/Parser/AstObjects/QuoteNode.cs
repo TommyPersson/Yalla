@@ -1,4 +1,5 @@
-﻿namespace Yalla.Parser.AstObjects
+
+namespace Yalla.Parser.AstObjects
 {
     public class QuoteNode : AstNode
     {
