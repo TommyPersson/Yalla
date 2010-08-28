@@ -51,6 +51,9 @@
     <Compile Include="Evaluator\Evaluator.cs" />
     <Compile Include="Parser\AstObjects\AstNode.cs" />
     <Compile Include="Parser\AstObjects\BooleanNode.cs" />
+    <Compile Include="Parser\AstObjects\BackquoteNode.cs" />
+    <Compile Include="Parser\AstObjects\SpliceNode.cs" />
+    <Compile Include="Parser\AstObjects\UnquoteNode.cs" />
     <Compile Include="Parser\AstObjects\FunctionNode.cs" />
     <Compile Include="Parser\AstObjects\ObjectNode.cs" />
     <Compile Include="Parser\AstObjects\QuoteNode.cs" />

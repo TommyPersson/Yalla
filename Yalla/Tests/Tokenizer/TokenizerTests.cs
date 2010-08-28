@@ -81,6 +81,7 @@ namespace Yalla.Tests.Tokenizer
             var tokenizer = new Yalla.Tokenizer.Tokenizer();
             var tokens = tokenizer.Tokenize("123");
             var tokens2 = tokenizer.Tokenize("123.456");
+            var tokens3 = tokenizer.Tokenize("-123");
 
             Assert.AreEqual(2, tokens.Count());
             Assert.AreEqual(Token.TokenType.Integer, tokens.ElementAt(0).Type);
@@ -91,6 +92,11 @@ namespace Yalla.Tests.Tokenizer
             Assert.AreEqual(Token.TokenType.Double, tokens2.ElementAt(0).Type);
             Assert.AreEqual("123.456", tokens2.ElementAt(0).Value);
             Assert.AreEqual(Token.TokenType.EndOfFile, tokens2.ElementAt(1).Type);
+
+            Assert.AreEqual(2, tokens3.Count());
+            Assert.AreEqual(Token.TokenType.Integer, tokens3.ElementAt(0).Type);
+            Assert.AreEqual("-123", tokens3.ElementAt(0).Value);
+            Assert.AreEqual(Token.TokenType.EndOfFile, tokens3.ElementAt(1).Type);
         }
     }
 }

@@ -11,6 +11,16 @@ namespace Yalla.Parser
     {
         private readonly Tokenizer.Tokenizer tokenizer;
 
+        private Stack<Tuple<ListNode, Stack<QuoteType>>> lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
+
+        private enum QuoteType
+        {
+            Quote,
+            Backquote,
+            Unquote,
+            Splice
+        }
+
         public Parser(Tokenizer.Tokenizer tokenizer)
         {
             this.tokenizer = tokenizer;
@@ -23,9 +33,8 @@ namespace Yalla.Parser
 
         public IList<AstNode> Parse(IEnumerable<Token> tokens)
         {
-            Stack<ListNode> lists = new Stack<ListNode>();
-
-            var result = new ListNode();
+            lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
+            var result = new Tuple<ListNode, Stack<QuoteType>>(new ListNode(), new Stack<QuoteType>());
             lists.Push(result);
 
             foreach (var token in tokens)
@@ -33,7 +42,7 @@ namespace Yalla.Parser
                 switch (token.Type)
                 {
                     case Token.TokenType.LParen:
-                        lists.Push(new ListNode());
+                        lists.Push(new Tuple<ListNode, Stack<QuoteType>>(new ListNode(), new Stack<QuoteType>()));
                         break;
 
                     case Token.TokenType.RParen:
@@ -43,11 +52,23 @@ namespace Yalla.Parser
                         }
 
                         var popped = lists.Pop();
-                        lists.Peek().AddChild(popped);
+                        AddNode(popped.Item1);
                         break;
 
                     case Token.TokenType.Quote:
-                        lists.Peek().ShallQuoteNextValue = true;
+                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        break;
+
+                    case Token.TokenType.Backquote:
+                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        break;
+
+                    case Token.TokenType.Unquote:
+                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        break;
+
+                    case Token.TokenType.Splice:
+                        lists.Peek().Item2.Push(QuoteType.Quote);
                         break;
 
                     case Token.TokenType.EndOfFile:
@@ -59,12 +80,12 @@ namespace Yalla.Parser
                         break;
 
                     default:
-                        lists.Peek().AddChild(Parse(token));
+                        AddNode(Parse(token));
                         break;
                 }
             }
 
-            return result.Children();
+            return result.Item1.Children();
         }
 
         public AstNode Parse(Token token)
@@ -82,6 +103,35 @@ namespace Yalla.Parser
             }
 
             return null;
+        }
+
+        public void AddNode(AstNode node)
+        {
+            AstNode value = node;
+
+            while (lists.Peek().Item2.Count > 0)
+            {
+                switch (lists.Peek().Item2.Pop())
+                {
+                    case QuoteType.Quote:
+                        value = new QuoteNode(value);
+                        break;
+
+                    case QuoteType.Backquote:
+                        value = new BackquoteNode(value);
+                        break;
+
+                    case QuoteType.Unquote:
+                        value = new UnquoteNode(value);
+                        break;
+
+                    case QuoteType.Splice:
+                        value = new SpliceNode(value);
+                        break;
+                }
+            }
+
+            lists.Peek().Item1.AddChild(value);
         }
     }
 }

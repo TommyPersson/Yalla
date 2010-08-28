@@ -14,6 +14,9 @@ namespace Yalla
                     { typeof(DecimalNode), x => PrettyPrint((DecimalNode)x) },
                     { typeof(IntegerNode), x => PrettyPrint((IntegerNode)x) },
                     { typeof(QuoteNode), x => PrettyPrint((QuoteNode)x) },
+                    { typeof(BackquoteNode), x => PrettyPrint((BackquoteNode)x) },
+                    { typeof(UnquoteNode), x => PrettyPrint((UnquoteNode)x) },
+                    { typeof(SpliceNode), x => PrettyPrint((SpliceNode)x) },
                     { typeof(StringNode), x => PrettyPrint((StringNode)x) },
                     { typeof(SymbolNode), x => PrettyPrint((SymbolNode)x) },
                     { typeof(ListNode), x => PrettyPrint((ListNode)x) },
@@ -39,6 +42,24 @@ namespace Yalla
         public static void PrettyPrint(QuoteNode node)
         {
             Console.Write("'");
+            PrettyPrint(node.InnerValue);
+        }
+
+        public static void PrettyPrint(BackquoteNode node)
+        {
+            Console.Write("`");
+            PrettyPrint(node.InnerValue);
+        }
+
+        public static void PrettyPrint(UnquoteNode node)
+        {
+            Console.Write("~");
+            PrettyPrint(node.InnerValue);
+        }
+
+        public static void PrettyPrint(SpliceNode node)
+        {
+            Console.Write("~@");
             PrettyPrint(node.InnerValue);
         }
 

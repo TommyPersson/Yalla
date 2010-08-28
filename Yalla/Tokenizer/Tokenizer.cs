@@ -8,7 +8,7 @@ namespace Yalla.Tokenizer
 {
     public class Tokenizer
     {
-        private readonly char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=' };
+        private readonly char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=', '<', '>', '|' };
         private readonly char?[] lookAhead = new char?[2];
 
         private string inputBuffer;
@@ -69,6 +69,9 @@ namespace Yalla.Tokenizer
                     case '\'':
                         Consume();
                         return new Token(Token.TokenType.Quote, "'", currentColumn, currentRow);
+                    case '`':
+                        Consume();
+                        return new Token(Token.TokenType.Backquote, "`", currentColumn, currentRow);
                     case '"':
                         return ParseString();
                     default:
@@ -82,6 +85,18 @@ namespace Yalla.Tokenizer
                         if (char.IsLetter(lookAhead[0].Value) || validSymbolChars.Contains(lookAhead[0].Value))
                         {
                             return ParseSymbol();
+                        }
+
+                        if (lookAhead[0].Value == '~')
+                        {
+                            if (lookAhead[1].HasValue && lookAhead[1].Value == '@')
+                            {
+                                Consume();
+                                Consume();
+                                return new Token(Token.TokenType.Splice, "~@", currentColumn - 1, currentRow);
+                            }
+
+                            return new Token(Token.TokenType.Unquote, "~", currentColumn, currentRow);
                         }
 
                         throw new SyntaxErrorException("Invalid input (" + lookAhead + ") at row " + currentRow + ", column " + currentColumn);

@@ -87,6 +87,18 @@ namespace Yalla.Tests.Parser
         }
 
         [Test]
+        public void QuotedCanBeAppliedManyTimes()
+        {
+            var result = Parser.Parse("''sym");
+
+            var quoteNode = result.First() as QuoteNode;
+            var quoteNode2 = quoteNode.InnerValue as QuoteNode;
+            var symbolNode = quoteNode2.InnerValue as SymbolNode;
+
+            Assert.AreEqual("sym", symbolNode.Name);
+        }
+
+        [Test]
         public void ShallParseEmptyLists()
         {
             var result = Parser.Parse("()");
@@ -109,6 +121,21 @@ namespace Yalla.Tests.Parser
             Assert.AreEqual(new SymbolNode("+"), listNode.Children().ElementAt(0));
             Assert.AreEqual(new IntegerNode(1), listNode.Children().ElementAt(1));
             Assert.AreEqual(new IntegerNode(2), listNode.Children().ElementAt(2));
+        }
+
+        [Test]
+        public void ShallParseBackQuotedValues()
+        {
+            var result = Parser.Parse("`sym");
+
+            var backQuoteNode = result.First() as BackquoteNode;
+
+            Assert.IsNotNull(backQuoteNode);
+
+            var symbolNode = backQuoteNode.InnerValue as SymbolNode;
+
+            Assert.IsNotNull(symbolNode);
+            Assert.AreEqual("sym", symbolNode.Name);
         }
     }
 }

@@ -20,7 +20,10 @@ namespace Yalla.Tokenizer
             Integer,
             Double,
             EndOfFile,
-            Quote
+            Quote,
+            Backquote,
+            Unquote,
+            Splice,
         }
 
         public TokenType Type { get; set; }

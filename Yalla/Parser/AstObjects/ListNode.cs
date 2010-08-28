@@ -18,8 +18,6 @@ namespace Yalla.Parser.AstObjects
             this.list = list;
         }
 
-        public bool ShallQuoteNextValue { get; set; }
-        
         public IList<AstNode> Children()
         {
             return list;
@@ -40,17 +38,9 @@ namespace Yalla.Parser.AstObjects
             return new ListNode(list.Concat(applist.Children()).ToList());
         }
 
-        public ListNode AddChild(AstNode yobject)
+        public ListNode AddChild(AstNode obj)
         {
-            var objectToAdd = yobject;
-
-            if (ShallQuoteNextValue)
-            {
-                objectToAdd = new QuoteNode(objectToAdd);
-                ShallQuoteNextValue = false;
-            }
-
-            list.Add(objectToAdd);
+            list.Add(obj);
             return this;
         }
     }
