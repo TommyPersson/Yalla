@@ -15,6 +15,8 @@ namespace Yalla.Evaluator
                     { typeof(AndFunctionNode), (x, y, z, v) => x.Apply((AndFunctionNode)y, z, v) },
                     { typeof(OrFunctionNode), (x, y, z, v) => x.Apply((OrFunctionNode)y, z, v) },
                     { typeof(EqualFunctionNode), (x, y, z, v) => x.Apply((EqualFunctionNode)y, z, v) },
+                    { typeof(ListFunctionNode), (x, y, z, v) => x.Apply((ListFunctionNode)y, z, v) },
+                    { typeof(ConsFunctionNode), (x, y, z, v) => x.Apply((ConsFunctionNode)y, z, v) },
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
                     { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
@@ -122,6 +124,31 @@ namespace Yalla.Evaluator
             }
 
             return AstNode.MakeNode(result);
+        }
+
+        public AstNode Apply(ListFunctionNode function, ListNode arguments, Environment environment)
+        {
+            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToList();
+
+            return AstNode.MakeNode(args);
+        }
+
+        public AstNode Apply(ConsFunctionNode function, ListNode arguments, Environment environment)
+        {
+            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToList();
+
+            if (args.Count != 2)
+            {
+                throw new ArgumentException("Cons expects 2 arguments, got " + args.Count);
+            }
+
+            var list = args.ElementAt(1) as ListNode;
+            if (list == null)
+            {
+                throw new ArgumentException("Second argument to cons must be a list.");
+            }
+
+            return ((ListNode)AstNode.MakeNode(new List<AstNode> { args.ElementAt(0) })).Append(list);
         }
 
         public AstNode Apply(NativeMethodFunctionNode method, ListNode arguments, Environment environment)

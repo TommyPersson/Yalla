@@ -35,9 +35,9 @@ namespace Yalla.Parser.AstObjects
             return new ListNode(list.Skip(1).ToList());
         }
 
-        public ListNode Append(AstNode yobject)
+        public ListNode Append(ListNode applist)
         {
-            return new ListNode(list.Concat(new List<AstNode> { yobject }).ToList());
+            return new ListNode(list.Concat(applist.Children()).ToList());
         }
 
         public ListNode AddChild(AstNode yobject)

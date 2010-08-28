@@ -1,4 +1,4 @@
-
+using System;
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -86,6 +86,41 @@ namespace Yalla.Tests.Evaluator
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Value);
+        }
+
+        [Test]
+        public void List()
+        {
+            var result = Evaluator.Evaluate("(list 1 2 3)") as ListNode;
+            
+            Assert.IsNotNull(result);
+
+            var values = result.Children().Cast<IntegerNode>().Select(x => x.Value);
+
+            Assert.AreEqual(1, values.ElementAt(0));
+            Assert.AreEqual(2, values.ElementAt(1));
+            Assert.AreEqual(3, values.ElementAt(2));
+        }
+
+        [Test]
+        public void Cons()
+        {
+            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(= (cons 1 (list 2)) (list 1 2))")).Value);
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(cons 1 2)"));
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(cons 1)"));
+        }
+        
+        [Test]
+        public void DefMacro()
+        {
+            var result = Evaluator.Evaluate("(defmacro defun (sym args &body body) " +
+                                            "  (list 'def (quote sym) " +
+                                            "    (append (list 'lambda 'args) (list body))) " +
+                                            "(defun my+ (x y) (+ x y)) " +
+                                            "(my+ 1 2)") as IntegerNode;
+            
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Value);
         }
     }
 }

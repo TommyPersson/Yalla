@@ -1,4 +1,6 @@
 
+using System.Collections.Generic;
+
 namespace Yalla.Parser.AstObjects
 {
     public abstract class AstNode
@@ -23,6 +25,11 @@ namespace Yalla.Parser.AstObjects
             if (o is string)
             {
                 return new StringNode((string)o);
+            }
+
+            if (o is IList<AstNode>)
+            {
+                return new ListNode((IList<AstNode>)o);
             }
 
             return new ObjectNode(o);
