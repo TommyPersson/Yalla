@@ -18,6 +18,7 @@ namespace Yalla.Evaluator
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
                     { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
+                    { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -179,7 +180,7 @@ namespace Yalla.Evaluator
         {
             if (arguments.Children().Count != procedure.Parameters.Count())
             {
-                throw new ArgumentException("Wrong number of arguments given to procedure!");
+                throw new ArgumentException("Wrong number of arguments given to procedure! Expected: " + procedure.Parameters.Count());
             }
 
             var localEnv = procedure.Environment.Copy();
@@ -190,6 +191,29 @@ namespace Yalla.Evaluator
             }
 
             return evaluator.Evaluate(procedure.Body, localEnv);
+        }
+
+        public AstNode Apply(DefineFunctionNode function, ListNode arguments, Environment environment)
+        {
+            if (arguments.Children().Count != 2)
+            {
+                throw new ArgumentException("Wrong number of arguments given to def! Expected: " + 2);
+            }
+
+            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+
+            if (symbol == null)
+            {
+                throw new ArgumentException("First argument to def not a symbol!");
+            }
+
+            var valueForm = arguments.Children().ElementAt(1);
+
+            var result = evaluator.Evaluate(valueForm, environment);
+
+            environment[symbol] = result;
+
+            return symbol;
         }
     }
 }

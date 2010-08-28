@@ -78,5 +78,14 @@ namespace Yalla.Tests.Evaluator
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Value);
         }
+
+        [Test]
+        public void Def()
+        {
+            var result = Evaluator.Evaluate("(def x 1)\n(+ x 1)") as IntegerNode;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Value);
+        }
     }
 }

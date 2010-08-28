@@ -14,6 +14,7 @@ namespace Yalla.Parser.AstObjects
                     { "and", new AndFunctionNode() },
                     { "or", new OrFunctionNode() },
                     { "lambda", new LambdaFunctionNode() },
+                    { "def", new DefineFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -76,6 +77,14 @@ namespace Yalla.Parser.AstObjects
         public EqualFunctionNode()
         {
             Symbol = "=";
+        }
+    }
+
+    public class DefineFunctionNode : FunctionNode
+    {
+        public DefineFunctionNode()
+        {
+            Symbol = "def";
         }
     }
 
