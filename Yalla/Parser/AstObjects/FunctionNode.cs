@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using Yalla.Evaluator;
 
 namespace Yalla.Parser.AstObjects
 {
@@ -12,6 +13,7 @@ namespace Yalla.Parser.AstObjects
                     { "=", new EqualFunctionNode() },
                     { "and", new AndFunctionNode() },
                     { "or", new OrFunctionNode() },
+                    { "lambda", new LambdaFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -75,5 +77,29 @@ namespace Yalla.Parser.AstObjects
         {
             Symbol = "=";
         }
+    }
+
+    public class LambdaFunctionNode : FunctionNode
+    {
+        public LambdaFunctionNode()
+        {
+            Symbol = "lambda";
+        }
+    }
+
+    public class ProcedureNode : FunctionNode
+    {
+        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<AstNode> body, Environment environment)
+        {
+            Parameters = parameters;
+            Body = body;
+            Environment = environment;
+        }
+
+        public IEnumerable<SymbolNode> Parameters { get; private set; }
+
+        public IEnumerable<AstNode> Body { get; private set; }
+
+        public Environment Environment { get; private set; }
     }
 }

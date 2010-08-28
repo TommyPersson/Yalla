@@ -13,6 +13,7 @@ namespace Yalla.Evaluator
                     { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
                     { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
                     { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
+                    { new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"] },
                     { new SymbolNode("true"), AstNode.MakeNode(true) },
                     { new SymbolNode("false"), AstNode.MakeNode(false) },
                 };
@@ -32,7 +33,6 @@ namespace Yalla.Evaluator
                     { typeof(QuoteNode), (x,y,z) => x.Evaluate((QuoteNode)y,z) },
                     { typeof(SymbolNode), (x,y,z) => x.Evaluate((SymbolNode)y,z) },
                     { typeof(FunctionNode), (x,y,z) => x.Evaluate((FunctionNode)y,z) },
-                    { typeof(NativeMethodFunctionNode), (x,y,z) => x.Evaluate((NativeMethodFunctionNode)y,z) },
                 };
 
         public Evaluator(Parser.Parser parser, Environment environmentExtensions = null)
@@ -71,6 +71,18 @@ namespace Yalla.Evaluator
             return evaluationFunctions[node.GetType()].Invoke(this, node, environment);
         }
 
+        public AstNode Evaluate(IEnumerable<AstNode> forms, Environment environment)
+        {
+            AstNode lastResult = null;
+
+            foreach (var form in forms)
+            {
+                lastResult = Evaluate(form, environment);
+            }
+
+            return lastResult;
+        }
+
         public AstNode Evaluate(ListNode node, Environment environment)
         {
             FunctionNode function = Evaluate(node.First(), environment) as FunctionNode;
@@ -104,11 +116,6 @@ namespace Yalla.Evaluator
         }
 
         public AstNode Evaluate(ObjectNode node, Environment environment)
-        {
-            return node;
-        }
-
-        public AstNode Evaluate(NativeMethodFunctionNode node, Environment environment)
         {
             return node;
         }

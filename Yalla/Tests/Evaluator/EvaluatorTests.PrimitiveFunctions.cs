@@ -1,4 +1,5 @@
 
+using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
@@ -57,6 +58,25 @@ namespace Yalla.Tests.Evaluator
             
             Assert.IsNotNull(result);
             Assert.AreEqual("World!", result.Value);
+        }
+
+        [Test]
+        public void Lambda()
+        {
+            var result = Evaluator.Evaluate("(lambda (x) x)") as ProcedureNode;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Parameters.Count());
+            Assert.IsTrue(result.Body.First() is SymbolNode);
+        }
+
+        [Test]
+        public void CanRunLambdaProcedure()
+        {
+            var result = Evaluator.Evaluate("((lambda (x y) (+ x y)) 1 2)") as IntegerNode;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Value);
         }
     }
 }

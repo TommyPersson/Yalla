@@ -16,6 +16,8 @@ namespace Yalla.Evaluator
                     { typeof(OrFunctionNode), (x, y, z, v) => x.Apply((OrFunctionNode)y, z, v) },
                     { typeof(EqualFunctionNode), (x, y, z, v) => x.Apply((EqualFunctionNode)y, z, v) },
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
+                    { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
+                    { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -153,6 +155,41 @@ namespace Yalla.Evaluator
             var result = omethod.Invoke(obj.Object, args.ToArray());
 
             return AstNode.MakeNode(result);
+        }
+
+        public AstNode Apply(LambdaFunctionNode function, ListNode arguments, Environment environment)
+        {
+            var parameterList = arguments.First() as ListNode;
+            var body = arguments.Rest();
+
+            if (parameterList == null)
+            {
+                throw new ArgumentException("Missing parameter list in lambda!");
+            }
+            
+            if (!parameterList.Children().All(x => x is SymbolNode))
+            {
+                throw new ArgumentException("Parameters must be symbols!");
+            }
+
+            return new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), body.Children(), environment.Copy());
+        }
+
+        public AstNode Apply(ProcedureNode procedure, ListNode arguments, Environment environment)
+        {
+            if (arguments.Children().Count != procedure.Parameters.Count())
+            {
+                throw new ArgumentException("Wrong number of arguments given to procedure!");
+            }
+
+            var localEnv = procedure.Environment.Copy();
+
+            for (int i = 0; i < procedure.Parameters.Count(); ++i)
+            {
+                localEnv.Add(procedure.Parameters.ElementAt(i), evaluator.Evaluate(arguments.Children().ElementAt(i), environment));
+            }
+
+            return evaluator.Evaluate(procedure.Body, localEnv);
         }
     }
 }
