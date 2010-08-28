@@ -19,7 +19,17 @@ namespace Yalla
                 var input = Console.In.ReadToEnd();
 
                 Console.Out.Write("=> ");
-                PrettyPrinter.PrettyPrint(evaluator.Evaluate(input));
+                try
+                {
+                    PrettyPrinter.PrettyPrint(evaluator.Evaluate(input));
+                }
+                catch (Exception ex)
+                {
+                    Console.Out.WriteLine("Unhandled exception: " + ex.GetType().ToString());
+                    Console.Out.WriteLine("Content:");
+                    Console.Out.WriteLine(ex.Message);
+                }
+
                 Console.Out.WriteLine();         
             }
         }
