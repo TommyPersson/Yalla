@@ -22,6 +22,7 @@ namespace Yalla
                     { typeof(ListNode), x => PrettyPrint((ListNode)x) },
                     { typeof(BooleanNode), x => PrettyPrint((BooleanNode)x) },
                     { typeof(ObjectNode), x => PrettyPrint((ObjectNode)x) },
+                    { typeof(FunctionNode), x => PrettyPrint((FunctionNode)x) },
                 };
 
         public static void PrettyPrint(AstNode node)
@@ -81,6 +82,11 @@ namespace Yalla
         public static void PrettyPrint(ObjectNode node)
         {
             Console.Write(node.Object.ToString());
+        }
+
+        public static void PrettyPrint(FunctionNode node)
+        {
+            Console.Write("<function: " + node.Symbol + ">");
         }
 
         public static void PrettyPrint(ListNode node)

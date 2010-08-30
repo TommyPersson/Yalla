@@ -130,11 +130,11 @@ namespace Yalla.Tests.Parser
 
             var backQuoteNode = result.First() as BackquoteNode;
 
-            Assert.IsNotNull(backQuoteNode);
+            Assert.IsNotNull(backQuoteNode, "not backquotenode :(");
 
             var symbolNode = backQuoteNode.InnerValue as SymbolNode;
 
-            Assert.IsNotNull(symbolNode);
+            Assert.IsNotNull(symbolNode, "not symbolnode :(");
             Assert.AreEqual("sym", symbolNode.Name);
         }
     }

@@ -96,10 +96,11 @@ namespace Yalla.Tokenizer
                                 return new Token(Token.TokenType.Splice, "~@", currentColumn - 1, currentRow);
                             }
 
+                            Consume();
                             return new Token(Token.TokenType.Unquote, "~", currentColumn, currentRow);
                         }
 
-                        throw new SyntaxErrorException("Invalid input (" + lookAhead + ") at row " + currentRow + ", column " + currentColumn);
+                        throw new SyntaxErrorException("Invalid input (" + lookAhead[0].Value + ") at row " + currentRow + ", column " + currentColumn);
                 }
             }
 

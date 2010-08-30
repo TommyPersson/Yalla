@@ -6,17 +6,14 @@ using Yalla.Parser.AstObjects;
 namespace Yalla.Tests.Evaluator
 {
     [TestFixture]
-    internal partial class EvaluatorTests
+    internal class Core
     {
-        private Yalla.Parser.Parser Parser { get; set; }
-
         private Yalla.Evaluator.Evaluator Evaluator { get; set; }
 
         [SetUp]
         public void Setup()
         {
-            Parser = new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer());
-            Evaluator = new Yalla.Evaluator.Evaluator(Parser);
+            Evaluator = new Yalla.Evaluator.Evaluator(new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer()));
         }
 
         [Test]

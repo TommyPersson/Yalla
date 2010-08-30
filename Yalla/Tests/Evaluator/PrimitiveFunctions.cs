@@ -6,8 +6,19 @@ using Yalla.Parser.AstObjects;
 namespace Yalla.Tests.Evaluator
 {
     [TestFixture]
-    internal partial class EvaluatorTests
+    internal class PrimitiveFunctions
     {
+        private Yalla.Parser.Parser Parser { get; set; }
+
+        private Yalla.Evaluator.Evaluator Evaluator { get; set; }
+
+        [SetUp]
+        public void Setup()
+        {
+            Parser = new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer());
+            Evaluator = new Yalla.Evaluator.Evaluator(Parser);
+        }
+
         [Test]
         public void Plus()
         {
@@ -105,7 +116,7 @@ namespace Yalla.Tests.Evaluator
         [Test]
         public void Cons()
         {
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(= (cons 1 (list 2)) (list 1 2))")).Value);
+            Assert.AreEqual(2, ((IntegerNode)((ListNode)Evaluator.Evaluate("(cons 1 (list 2))")).Children().ElementAt(1)).Value);
             Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(cons 1 2)"));
             Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(cons 1)"));
         }

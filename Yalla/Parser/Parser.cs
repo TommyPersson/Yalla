@@ -60,15 +60,15 @@ namespace Yalla.Parser
                         break;
 
                     case Token.TokenType.Backquote:
-                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        lists.Peek().Item2.Push(QuoteType.Backquote);
                         break;
 
                     case Token.TokenType.Unquote:
-                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        lists.Peek().Item2.Push(QuoteType.Unquote);
                         break;
 
                     case Token.TokenType.Splice:
-                        lists.Peek().Item2.Push(QuoteType.Quote);
+                        lists.Peek().Item2.Push(QuoteType.Splice);
                         break;
 
                     case Token.TokenType.EndOfFile:

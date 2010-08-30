@@ -24,6 +24,7 @@ namespace Yalla.Evaluator
 
         private readonly Parser.Parser parser;
         private readonly Applier applier;
+        private readonly BackquoteExpander backqouteExpander;
 
         private readonly IDictionary<Type, Func<Evaluator, AstNode, Environment, AstNode>> evaluationFunctions =
             new Dictionary<Type, Func<Evaluator, AstNode, Environment, AstNode>>
@@ -44,6 +45,7 @@ namespace Yalla.Evaluator
         {
             this.parser = parser;
             applier = new Applier(this);
+            backqouteExpander = new BackquoteExpander(this);
 
             InitializeGlobalEnvironment(environmentExtensions);
         }
@@ -69,6 +71,11 @@ namespace Yalla.Evaluator
             }
 
             return lastResult;
+        }
+
+        public AstNode Evaluate(AstNode node)
+        {
+            return Evaluate(node, globalEnvironment);
         }
 
         public AstNode Evaluate(AstNode node, Environment environment)
@@ -114,8 +121,7 @@ namespace Yalla.Evaluator
 
         public AstNode Evaluate(BackquoteNode node, Environment environment)
         {
-            throw new Exception("meh");
-            return node.InnerValue;
+            return backqouteExpander.Expand(node.InnerValue, 1);
         }
 
         public AstNode Evaluate(SymbolNode node, Environment environment)
