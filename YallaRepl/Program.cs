@@ -12,7 +12,8 @@ namespace YallaRepl
         public static void Main(string[] args)
         {
             var evaluator = new Evaluator(new Parser(new Tokenizer()));
-         
+            var prettyPrinter = new PrettyPrinter();
+            
             Console.Out.WriteLine("End you statements with <Enter> <Ctrl-Z> <Enter>. Quit with <Ctrl-C>.");
 
             while (true)
@@ -21,11 +22,12 @@ namespace YallaRepl
                 Console.Out.Write("yalla> ");
 
                 var input = Console.In.ReadToEnd();
-
+                
                 Console.Out.Write("=> ");
                 try
                 {
-                    PrettyPrinter.PrettyPrint(evaluator.Evaluate(input));
+                    var result = prettyPrinter.PrettyPrint(evaluator.Evaluate(input));
+                    Console.Out.Write(result);
                 }
                 catch (Exception ex)
                 {

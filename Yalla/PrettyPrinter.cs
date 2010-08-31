@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Yalla.Parser.AstObjects;
 
@@ -8,103 +9,114 @@ namespace Yalla
 {
     public class PrettyPrinter
     {
-        private static readonly IDictionary<Type, Action<AstNode>> NodeTypeDispatch =
-            new Dictionary<Type, Action<AstNode>>
+        private readonly IDictionary<Type, Action<PrettyPrinter, AstNode>> nodeTypeDispatch =
+            new Dictionary<Type, Action<PrettyPrinter, AstNode>>
                 {
-                    { typeof(DecimalNode), x => PrettyPrint((DecimalNode)x) },
-                    { typeof(IntegerNode), x => PrettyPrint((IntegerNode)x) },
-                    { typeof(QuoteNode), x => PrettyPrint((QuoteNode)x) },
-                    { typeof(BackquoteNode), x => PrettyPrint((BackquoteNode)x) },
-                    { typeof(UnquoteNode), x => PrettyPrint((UnquoteNode)x) },
-                    { typeof(SpliceNode), x => PrettyPrint((SpliceNode)x) },
-                    { typeof(StringNode), x => PrettyPrint((StringNode)x) },
-                    { typeof(SymbolNode), x => PrettyPrint((SymbolNode)x) },
-                    { typeof(ListNode), x => PrettyPrint((ListNode)x) },
-                    { typeof(BooleanNode), x => PrettyPrint((BooleanNode)x) },
-                    { typeof(ObjectNode), x => PrettyPrint((ObjectNode)x) },
-                    { typeof(FunctionNode), x => PrettyPrint((FunctionNode)x) },
+                    { typeof(DecimalNode), (x, y) => x.PrettyPrintSub((DecimalNode)y) },
+                    { typeof(IntegerNode), (x, y) => x.PrettyPrintSub((IntegerNode)y) },
+                    { typeof(QuoteNode), (x, y) => x.PrettyPrintSub((QuoteNode)y) },
+                    { typeof(BackquoteNode), (x, y) => x.PrettyPrintSub((BackquoteNode)y) },
+                    { typeof(UnquoteNode), (x, y) => x.PrettyPrintSub((UnquoteNode)y) },
+                    { typeof(SpliceNode), (x, y) => x.PrettyPrintSub((SpliceNode)y) },
+                    { typeof(StringNode), (x, y) => x.PrettyPrintSub((StringNode)y) },
+                    { typeof(SymbolNode), (x, y) => x.PrettyPrintSub((SymbolNode)y) },
+                    { typeof(ListNode), (x, y) => x.PrettyPrintSub((ListNode)y) },
+                    { typeof(BooleanNode), (x, y) => x.PrettyPrintSub((BooleanNode)y) },
+                    { typeof(ObjectNode), (x, y) => x.PrettyPrintSub((ObjectNode)y) },
+                    { typeof(FunctionNode), (x, y) => x.PrettyPrintSub((FunctionNode)y) },
                 };
 
-        public static void PrettyPrint(AstNode node)
+        private StringWriter stringWriter; 
+
+        public string PrettyPrint(AstNode node)
         {
-            NodeTypeDispatch[node.GetType()].Invoke(node);
+            stringWriter = new StringWriter();
+
+            PrettyPrintSub(node);
+
+            return stringWriter.ToString();
         }
 
-        public static void PrettyPrint(DecimalNode node)
+        private void PrettyPrintSub(AstNode node)
         {
-            Console.Write(node.Value);
+            nodeTypeDispatch[node.GetType()].Invoke(this, node);
         }
 
-        public static void PrettyPrint(IntegerNode node)
+        private void PrettyPrintSub(DecimalNode node)
         {
-            Console.Write(node.Value);
+            stringWriter.Write(node.Value);
         }
 
-        public static void PrettyPrint(QuoteNode node)
+        private void PrettyPrintSub(IntegerNode node)
         {
-            Console.Write("'");
+            stringWriter.Write(node.Value);
+        }
+
+        private void PrettyPrintSub(QuoteNode node)
+        {
+            stringWriter.Write("'");
             PrettyPrint(node.InnerValue);
         }
 
-        public static void PrettyPrint(BackquoteNode node)
+        private void PrettyPrintSub(BackquoteNode node)
         {
-            Console.Write("`");
+            stringWriter.Write("`");
             PrettyPrint(node.InnerValue);
         }
 
-        public static void PrettyPrint(UnquoteNode node)
+        private void PrettyPrintSub(UnquoteNode node)
         {
-            Console.Write("~");
+            stringWriter.Write("~");
             PrettyPrint(node.InnerValue);
         }
 
-        public static void PrettyPrint(SpliceNode node)
+        private void PrettyPrintSub(SpliceNode node)
         {
-            Console.Write("~@");
+            stringWriter.Write("~@");
             PrettyPrint(node.InnerValue);
         }
 
-        public static void PrettyPrint(StringNode node)
+        private void PrettyPrintSub(StringNode node)
         {
-            Console.Write("\"" + node.Value + "\"");
+            stringWriter.Write("\"" + node.Value + "\"");
         }
 
-        public static void PrettyPrint(SymbolNode node)
+        private void PrettyPrintSub(SymbolNode node)
         {
-            Console.Write(node.Name);
+            stringWriter.Write(node.Name);
         }
 
-        public static void PrettyPrint(BooleanNode node)
+        private void PrettyPrintSub(BooleanNode node)
         {
-            Console.Write(node.Value.ToString());
+            stringWriter.Write(node.Value.ToString());
         }
 
-        public static void PrettyPrint(ObjectNode node)
+        private void PrettyPrintSub(ObjectNode node)
         {
-            Console.Write(node.Object.ToString());
+            stringWriter.Write(node.Object.ToString());
         }
 
-        public static void PrettyPrint(FunctionNode node)
+        private void PrettyPrintSub(FunctionNode node)
         {
-            Console.Write("<function: " + node.Symbol + ">");
+            stringWriter.Write("<function: " + node.Symbol + ">");
         }
 
-        public static void PrettyPrint(ListNode node)
+        private void PrettyPrintSub(ListNode node)
         {
-            Console.Out.Write("(");
+            stringWriter.Write("(");
 
             for (int i = 0; i < node.Children().Count; i++)
             {
                 var printnode = node.Children().ElementAt(i);
-                PrettyPrint(printnode);
+                PrettyPrintSub(printnode);
                 
                 if (i < node.Children().Count - 1)
                 {
-                    Console.Write(" ");
+                    stringWriter.Write(" ");
                 }
             }
 
-            Console.Out.Write(")");
+            stringWriter.Write(")");
         }
     }
 }
