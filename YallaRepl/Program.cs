@@ -1,13 +1,17 @@
 
 using System;
+using Yalla;
+using Yalla.Evaluator;
+using Yalla.Parser;
+using Yalla.Tokenizer;
 
-namespace Yalla
+namespace YallaRepl
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var evaluator = new Evaluator.Evaluator(new Parser.Parser(new Tokenizer.Tokenizer()));
+            var evaluator = new Evaluator(new Parser(new Tokenizer()));
          
             Console.Out.WriteLine("End you statements with <Enter> <Ctrl-Z> <Enter>. Quit with <Ctrl-C>.");
 
