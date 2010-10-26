@@ -175,14 +175,24 @@ namespace Yalla.Evaluator
             var otype = obj.Object.GetType();
 
             var omethod = otype.GetMethod(method.Name, argTypes.ToArray());
-            if (omethod == null)
+            if (omethod != null)
             {
-                throw new ArgumentException("Method " + method.Name + " not found on type " + otype.Name + "!");
+                return AstNode.MakeNode(omethod.Invoke(obj.Object, args.ToArray()));
             }
 
-            var result = omethod.Invoke(obj.Object, args.ToArray());
+            var oproperty = otype.GetProperty(method.Name);
+            if (oproperty != null)
+            {
+                return AstNode.MakeNode(oproperty.GetValue(obj.Object, null));
+            }
 
-            return AstNode.MakeNode(result);
+            var ofield = otype.GetField(method.Name);
+            if (ofield != null)
+            {
+                return AstNode.MakeNode(ofield.GetValue(obj));
+            }
+
+            throw new ArgumentException(method.Name + " is not a valid method, property or field on " + otype);
         }
 
         public AstNode Apply(LambdaFunctionNode function, ListNode arguments, Environment environment)
