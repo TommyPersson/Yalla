@@ -18,6 +18,7 @@ namespace Yalla.Evaluator
                     { new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"] },
                     { new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"] },
                     { new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"] },
+                    { new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"] },
                     { new SymbolNode("true"), AstNode.MakeNode(true) },
                     { new SymbolNode("false"), AstNode.MakeNode(false) },
                 };
@@ -121,7 +122,7 @@ namespace Yalla.Evaluator
 
         public AstNode Evaluate(BackquoteNode node, Environment environment)
         {
-            return backqouteExpander.Expand(node.InnerValue, 1);
+            return backqouteExpander.Expand(node.InnerValue, 1, environment);
         }
 
         public AstNode Evaluate(SymbolNode node, Environment environment)

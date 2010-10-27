@@ -17,6 +17,7 @@ namespace Yalla.Parser.AstObjects
                     { "cons", new ConsFunctionNode() },
                     { "lambda", new LambdaFunctionNode() },
                     { "def", new DefineFunctionNode() },
+                    { "defmacro", new DefmacroFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -116,11 +117,12 @@ namespace Yalla.Parser.AstObjects
 
     public class ProcedureNode : FunctionNode
     {
-        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<AstNode> body, Environment environment)
+        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<AstNode> body, Environment environment, bool isMacro = false)
         {
             Parameters = parameters;
             Body = body;
             Environment = environment;
+            IsMacro = isMacro;
         }
 
         public IEnumerable<SymbolNode> Parameters { get; private set; }
@@ -128,5 +130,15 @@ namespace Yalla.Parser.AstObjects
         public IEnumerable<AstNode> Body { get; private set; }
 
         public Environment Environment { get; private set; }
+
+        public bool IsMacro { get; private set; }
+    }
+    
+    public class DefmacroFunctionNode : FunctionNode
+    {
+        public DefmacroFunctionNode()
+        {
+            Symbol = "defmacro";
+        }
     }
 }

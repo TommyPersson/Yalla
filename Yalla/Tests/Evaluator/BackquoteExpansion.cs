@@ -31,7 +31,7 @@ namespace Yalla.Tests.Evaluator
         [Test]
         public void ShallSpliceListsIntoLists()
         {
-            var result = (ListNode)Evaluator.Evaluate("`(a b ~@(c d))");
+            var result = (ListNode)Evaluator.Evaluate("`(a b ~@'(c d))");
 
             Assert.AreEqual("a", ((SymbolNode)result.Children().ElementAt(0)).Name);
             Assert.AreEqual("b", ((SymbolNode)result.Children().ElementAt(1)).Name);

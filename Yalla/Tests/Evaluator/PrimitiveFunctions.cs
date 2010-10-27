@@ -124,9 +124,8 @@ namespace Yalla.Tests.Evaluator
         [Test]
         public void DefMacro()
         {
-            var result = Evaluator.Evaluate("(defmacro defun (sym args &body body) " +
-                                            "  (list 'def (quote sym) " +
-                                            "    (append (list 'lambda 'args) (list body))) " +
+            var result = Evaluator.Evaluate("(defmacro defun (sym params body) " +
+                                            "  `(def ~sym (lambda ~params ~body))) " +
                                             "(defun my+ (x y) (+ x y)) " +
                                             "(my+ 1 2)") as IntegerNode;
             

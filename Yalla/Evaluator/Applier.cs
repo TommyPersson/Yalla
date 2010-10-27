@@ -21,6 +21,7 @@ namespace Yalla.Evaluator
                     { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
                     { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
+                    { typeof(DefmacroFunctionNode), (x, y, z, v) => x.Apply((DefmacroFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -221,13 +222,19 @@ namespace Yalla.Evaluator
             }
 
             var localEnv = procedure.Environment.Copy();
-
+            
             for (int i = 0; i < procedure.Parameters.Count(); ++i)
             {
-                localEnv.Add(procedure.Parameters.ElementAt(i), evaluator.Evaluate(arguments.Children().ElementAt(i), environment));
+                var parameterSymbol = procedure.Parameters.ElementAt(i);
+                var evaluatedArgument = 
+                    procedure.IsMacro 
+                    ? arguments.Children().ElementAt(i) 
+                    : evaluator.Evaluate(arguments.Children().ElementAt(i), environment);
+
+                localEnv.Add(parameterSymbol, evaluatedArgument);
             }
 
-            return evaluator.Evaluate(procedure.Body, localEnv);
+            return evaluator.Evaluate(evaluator.Evaluate(procedure.Body, localEnv), environment);
         }
 
         public AstNode Apply(DefineFunctionNode function, ListNode arguments, Environment environment)
@@ -249,6 +256,34 @@ namespace Yalla.Evaluator
             var result = evaluator.Evaluate(valueForm, environment);
 
             environment[symbol] = result;
+
+            return symbol;
+        }
+
+        public AstNode Apply(DefmacroFunctionNode function, ListNode arguments, Environment environment)
+        {
+            if (arguments.Children().Count != 3)
+            {
+                throw new ArgumentException("Wrong number of arguments given to defmacro! Expected: " + 3);
+            }
+
+            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+            if (symbol == null)
+            {
+                throw new ArgumentException("First argument to defmacro not a symbol!");
+            }
+
+            var parameterList = arguments.Children().ElementAt(1) as ListNode;
+            if (parameterList == null)
+            {
+                throw new ArgumentException("Second argument to defmacro not a parameterlist!");
+            }
+
+            var body = arguments.Children().ElementAt(2);
+
+            var macro = new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), new[] { body }, environment.Copy(), true);
+            
+            environment[symbol] = macro;
 
             return symbol;
         }
