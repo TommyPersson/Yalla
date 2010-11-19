@@ -2,6 +2,7 @@
 using System;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
+using Environment = Yalla.Evaluator.Environment;
 
 namespace Tests.Evaluator
 {
@@ -13,7 +14,7 @@ namespace Tests.Evaluator
         [SetUp]
         public void Setup()
         {
-            Evaluator = new Yalla.Evaluator.Evaluator(new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer()));
+            Evaluator = new Yalla.Evaluator.Evaluator(new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer()), new Environment(), null, null);
         }
 
         [Test]

@@ -3,17 +3,17 @@ using System.IO;
 using NUnit.Framework;
 using Yalla.Evaluator;
 
-namespace Tests.Evaluator.PrimitiveFunctions
+namespace Tests.Evaluator.Language
 {
-    internal class PrimitiveFunctionTestBase
+    internal class LanguageTestBase
     {
         protected Yalla.Parser.Parser Parser { get; set; }
 
         protected Yalla.Evaluator.Evaluator Evaluator { get; set; }
 
-        protected TextWriter StdOut { get; set; }
+        protected StringWriter StdOut { get; set; }
 
-        protected TextReader StdIn { get; set; }
+        protected StringReader StdIn { get; set; }
 
         [SetUp]
         protected void Setup()

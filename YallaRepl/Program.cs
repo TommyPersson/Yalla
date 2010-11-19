@@ -4,6 +4,7 @@ using Yalla;
 using Yalla.Evaluator;
 using Yalla.Parser;
 using Yalla.Tokenizer;
+using Environment = Yalla.Evaluator.Environment;
 
 namespace YallaRepl
 {
@@ -11,7 +12,7 @@ namespace YallaRepl
     {
         public static void Main(string[] args)
         {
-            var evaluator = new Evaluator(new Parser(new Tokenizer()));
+            var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), Console.Out, Console.In);
             var prettyPrinter = new PrettyPrinter();
             
             Console.Out.WriteLine("End you statements with <Enter> <Ctrl-Z> <Enter>. Quit with <Ctrl-C>.");

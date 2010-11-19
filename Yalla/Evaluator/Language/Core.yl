@@ -1,2 +1,14 @@
 ﻿(defmacro defun (sym params & body)
   `(def ~sym (lambda ~params ~@body)))
+
+(defmacro do (& body)
+  `((lambda () ~@body))) 
+
+(defmacro when (predicate & body)
+  `(if ~predicate (do ~@body)))
+
+(defmacro unless (predicate & body)
+  `(if ~predicate nil (do ~@body))) 
+   
+(defun println (l)
+  (when *stdout* (.WriteLine *stdout* l)))

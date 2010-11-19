@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Evaluator\Language\FlowControl.cs" />
+    <Compile Include="Evaluator\Language\IO.cs" />
+    <Compile Include="Evaluator\Language\LanguageTestBase.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Def.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Equals.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\If.cs" />

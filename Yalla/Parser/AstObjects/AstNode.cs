@@ -32,6 +32,11 @@ namespace Yalla.Parser.AstObjects
                 return new ListNode((IList<AstNode>)o);
             }
 
+            if (o == null)
+            {
+                return new NilNode();
+            }
+
             return new ObjectNode(o);
         }
     }

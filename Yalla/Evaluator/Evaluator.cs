@@ -1,6 +1,7 @@
-﻿using System;
-using System.Data;
+
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Reflection;
 using Yalla.Parser.AstObjects;
@@ -12,20 +13,20 @@ namespace Yalla.Evaluator
         private readonly Environment globalEnvironment =
             new Environment(new Dictionary<SymbolNode, AstNode>
                                 {
-                                    {new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"]},
-                                    {new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"]},
-                                    {new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"]},
-                                    {new SymbolNode("="), FunctionNode.PrimitiveFunctions["="]},
-                                    {new SymbolNode("list"), FunctionNode.PrimitiveFunctions["list"]},
-                                    {new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"]},
-                                    {new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"]},
-                                    {new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"]},
-                                    {new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"]},
-                                    {new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"]},
-                                    {new SymbolNode("if"), FunctionNode.PrimitiveFunctions["if"]},
-                                    {new SymbolNode("nil"), new NilNode()},
-                                    {new SymbolNode("true"), AstNode.MakeNode(true)},
-                                    {new SymbolNode("false"), AstNode.MakeNode(false)},
+                                    { new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"] },
+                                    { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
+                                    { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
+                                    { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
+                                    { new SymbolNode("list"), FunctionNode.PrimitiveFunctions["list"] },
+                                    { new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"] },
+                                    { new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"] },
+                                    { new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"] },
+                                    { new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"] },
+                                    { new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"] },
+                                    { new SymbolNode("if"), FunctionNode.PrimitiveFunctions["if"] },
+                                    { new SymbolNode("nil"), new NilNode() },
+                                    { new SymbolNode("true"), AstNode.MakeNode(true) },
+                                    { new SymbolNode("false"), AstNode.MakeNode(false) },
                                 });
 
         private readonly Parser.Parser parser;
@@ -35,47 +36,27 @@ namespace Yalla.Evaluator
         private readonly IDictionary<Type, Func<Evaluator, AstNode, Environment, AstNode>> evaluationFunctions =
             new Dictionary<Type, Func<Evaluator, AstNode, Environment, AstNode>>
                 {
-                    { typeof(ListNode), (x,y,z) => x.Evaluate((ListNode)y,z) },
-                    { typeof(BooleanNode), (x,y,z) => x.EvaluateToSelf(y,z) },
-                    { typeof(IntegerNode), (x,y,z) => x.EvaluateToSelf(y,z) },
-                    { typeof(DecimalNode), (x,y,z) => x.EvaluateToSelf(y,z) },
-                    { typeof(StringNode), (x,y,z) => x.EvaluateToSelf(y,z) },
-                    { typeof(ObjectNode), (x,y,z) => x.EvaluateToSelf(y,z) },
-                    { typeof(QuoteNode), (x,y,z) => x.Evaluate((QuoteNode)y,z) },
-                    { typeof(BackquoteNode), (x,y,z) => x.Evaluate((BackquoteNode)y,z) },
-                    { typeof(SymbolNode), (x,y,z) => x.Evaluate((SymbolNode)y,z) },
-                    { typeof(FunctionNode), (x,y,z) => x.EvaluateToSelf(y,z) },
+                    { typeof(ListNode), (x, y, z) => x.Evaluate((ListNode)y, z) },
+                    { typeof(BooleanNode), (x, y, z) => x.EvaluateToSelf(y, z) },
+                    { typeof(IntegerNode), (x, y, z) => x.EvaluateToSelf(y, z) },
+                    { typeof(DecimalNode), (x, y, z) => x.EvaluateToSelf(y, z) },
+                    { typeof(StringNode), (x, y, z) => x.EvaluateToSelf(y, z) },
+                    { typeof(ObjectNode), (x, y, z) => x.EvaluateToSelf(y, z) },
+                    { typeof(QuoteNode), (x, y, z) => x.Evaluate((QuoteNode)y, z) },
+                    { typeof(BackquoteNode), (x, y, z) => x.Evaluate((BackquoteNode)y, z) },
+                    { typeof(SymbolNode), (x, y, z) => x.Evaluate((SymbolNode)y, z) },
+                    { typeof(FunctionNode), (x, y, z) => x.EvaluateToSelf(y, z) },
                 };
 
-        public Evaluator(Parser.Parser parser, Environment environmentExtensions = null)
+        public Evaluator(Parser.Parser parser, Environment environmentExtensions, TextWriter stdOut, TextReader stdIn)
         {
             this.parser = parser;
             applier = new Applier(this);
             backqouteExpander = new BackquoteExpander(this);
+            
+            InitializeGlobalEnvironment(environmentExtensions, stdOut, stdIn);
 
             ReadCoreLanguageCode();
-
-            InitializeGlobalEnvironment(environmentExtensions);
-        }
-
-        private void ReadCoreLanguageCode()
-        {
-            var textStream = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Yalla.Evaluator.Language.Core.yl"));
-
-            var text = textStream.ReadToEnd();
-
-            Evaluate(text);
-        }
-
-        public void InitializeGlobalEnvironment(Environment environmentExtensions = null)
-        {
-            if (environmentExtensions != null)
-            {
-                foreach (var environmentExtension in environmentExtensions)
-                {
-                    globalEnvironment.DefineSymbol(environmentExtension.Key, environmentExtension.Value);
-                }
-            }
         }
 
         public AstNode Evaluate(string input)
@@ -159,6 +140,31 @@ namespace Yalla.Evaluator
         public AstNode EvaluateToSelf(AstNode node, Environment environment)
         {
             return node;
+        }
+
+        private void ReadCoreLanguageCode()
+        {
+            var textStream = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Yalla.Evaluator.Language.Core.yl"));
+
+            var text = textStream.ReadToEnd();
+
+            Evaluate(text);
+        }
+
+        private void InitializeGlobalEnvironment(Environment environmentExtensions, TextWriter stdOut, TextReader stdIn)
+        {
+            globalEnvironment.DefineSymbol(new SymbolNode("*evaluator*"), AstNode.MakeNode(this));
+            globalEnvironment.DefineSymbol(new SymbolNode("*parser*"), AstNode.MakeNode(parser));
+            globalEnvironment.DefineSymbol(new SymbolNode("*stdout*"), AstNode.MakeNode(stdOut));
+            globalEnvironment.DefineSymbol(new SymbolNode("*stdin*"), AstNode.MakeNode(stdIn));
+
+            if (environmentExtensions != null)
+            {
+                foreach (var environmentExtension in environmentExtensions)
+                {
+                    globalEnvironment.DefineSymbol(environmentExtension.Key, environmentExtension.Value);
+                }
+            }
         }
     }
 }
