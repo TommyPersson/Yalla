@@ -1,9 +1,10 @@
+
 using System;
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
-namespace Yalla.Tests.Evaluator
+namespace Tests.Evaluator
 {
     [TestFixture]
     internal class PrimitiveFunctions

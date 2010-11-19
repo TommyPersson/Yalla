@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
-namespace Yalla.Tests.Parser
+namespace Tests.Parser
 {
     [TestFixture]
     internal class ParserTests

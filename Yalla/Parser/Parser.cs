@@ -13,17 +13,17 @@ namespace Yalla.Parser
 
         private Stack<Tuple<ListNode, Stack<QuoteType>>> lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
 
+        public Parser(Tokenizer.Tokenizer tokenizer)
+        {
+            this.tokenizer = tokenizer;
+        }
+
         private enum QuoteType
         {
             Quote,
             Backquote,
             Unquote,
             Splice
-        }
-
-        public Parser(Tokenizer.Tokenizer tokenizer)
-        {
-            this.tokenizer = tokenizer;
         }
 
         public IList<AstNode> Parse(string input)

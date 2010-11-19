@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yalla", "Yalla\Yalla.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YallaRepl", "YallaRepl\YallaRepl.csproj", "{AD158454-ECB0-474A-9610-0E90D725555A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,6 +21,10 @@ Global
 		{AD158454-ECB0-474A-9610-0E90D725555A}.Debug|x86.Build.0 = Debug|x86
 		{AD158454-ECB0-474A-9610-0E90D725555A}.Release|x86.ActiveCfg = Release|x86
 		{AD158454-ECB0-474A-9610-0E90D725555A}.Release|x86.Build.0 = Release|x86
+		{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}.Debug|x86.ActiveCfg = Debug|x86
+		{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}.Debug|x86.Build.0 = Debug|x86
+		{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}.Release|x86.ActiveCfg = Release|x86
+		{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,7 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Yalla.Tokenizer;
 
-namespace Yalla.Tests.Tokenizer
+namespace Tests.Tokenizer
 {
     [TestFixture]
     internal class TokenizerTests
