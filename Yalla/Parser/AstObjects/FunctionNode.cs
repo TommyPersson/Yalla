@@ -18,6 +18,7 @@ namespace Yalla.Parser.AstObjects
                     { "lambda", new LambdaFunctionNode() },
                     { "def", new DefineFunctionNode() },
                     { "defmacro", new DefmacroFunctionNode() },
+                    { "set!", new SetFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -139,6 +140,14 @@ namespace Yalla.Parser.AstObjects
         public DefmacroFunctionNode()
         {
             Symbol = "defmacro";
+        }
+    }
+
+    public class SetFunctionNode : FunctionNode
+    {
+        public SetFunctionNode()
+        {
+            Symbol = "set!";
         }
     }
 }

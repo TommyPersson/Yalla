@@ -133,5 +133,13 @@ namespace Tests.Evaluator
             Assert.IsNotNull(result);
             Assert.AreEqual(3, result.Value);
         }
+
+        [Test]
+        public void Set()
+        {
+            Assert.Throws(typeof(ArgumentException), () => Evaluator.Evaluate("(set! x 2)"));
+
+            Assert.AreEqual(2, ((IntegerNode)Evaluator.Evaluate("(def x 1)\n(set! x 2)\nx")).Value);
+        }
     }
 }

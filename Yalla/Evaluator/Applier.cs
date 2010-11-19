@@ -22,6 +22,7 @@ namespace Yalla.Evaluator
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
                     { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
                     { typeof(DefmacroFunctionNode), (x, y, z, v) => x.Apply((DefmacroFunctionNode)y, z, v) },
+                    { typeof(SetFunctionNode), (x, y, z, v) => x.Apply((SetFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -286,6 +287,33 @@ namespace Yalla.Evaluator
             environment[symbol] = macro;
 
             return symbol;
+        }
+
+        public AstNode Apply(SetFunctionNode function, ListNode arguments, Environment environment)
+        {
+            if (arguments.Children().Count != 2)
+            {
+                throw new ArgumentException("Wrong number of arguments given to set!! Expected: " + 2);
+            }
+
+            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+            if (symbol == null)
+            {
+                throw new ArgumentException("First argument to set! not a symbol!");
+            }
+
+            var value = arguments.Children().ElementAt(1);
+
+            if (environment.ContainsKey(symbol))
+            {
+                environment[symbol] = value;
+            }
+            else
+            {
+                throw new ArgumentException("Symbol '" + symbol.Name + "' not defined!");
+            }
+
+            return value;
         }
     }
 }
