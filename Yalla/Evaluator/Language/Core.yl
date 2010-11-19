@@ -1,0 +1,2 @@
+﻿(defmacro defun (sym params & body)
+  `(def ~sym (lambda ~params ~@body)))

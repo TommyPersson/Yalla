@@ -24,6 +24,7 @@ namespace Yalla
                     { typeof(BooleanNode), (x, y) => x.PrettyPrintSub((BooleanNode)y) },
                     { typeof(ObjectNode), (x, y) => x.PrettyPrintSub((ObjectNode)y) },
                     { typeof(FunctionNode), (x, y) => x.PrettyPrintSub((FunctionNode)y) },
+                    { typeof(ProcedureNode), (x, y) => x.PrettyPrintSub((ProcedureNode)y) },
                 };
 
         private StringWriter stringWriter; 
@@ -98,7 +99,12 @@ namespace Yalla
 
         private void PrettyPrintSub(FunctionNode node)
         {
-            stringWriter.Write("<function: " + node.Symbol + ">");
+            stringWriter.Write("<primitive-function: " + node.Symbol + ">");
+        }
+
+        private void PrettyPrintSub(ProcedureNode node)
+        {
+            stringWriter.Write("<procedure: " + node.Symbol + ">");
         }
 
         private void PrettyPrintSub(ListNode node)

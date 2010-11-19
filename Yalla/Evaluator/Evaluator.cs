@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Yalla.Parser.AstObjects;
 
 namespace Yalla.Evaluator
@@ -51,7 +53,18 @@ namespace Yalla.Evaluator
             applier = new Applier(this);
             backqouteExpander = new BackquoteExpander(this);
 
+            ReadCoreLanguageCode();
+
             InitializeGlobalEnvironment(environmentExtensions);
+        }
+
+        private void ReadCoreLanguageCode()
+        {
+            var textStream = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("Yalla.Evaluator.Language.Core.yl"));
+
+            var text = textStream.ReadToEnd();
+
+            Evaluate(text);
         }
 
         public void InitializeGlobalEnvironment(Environment environmentExtensions = null)
