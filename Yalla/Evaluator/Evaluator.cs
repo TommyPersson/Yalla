@@ -20,6 +20,8 @@ namespace Yalla.Evaluator
                                     {new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"]},
                                     {new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"]},
                                     {new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"]},
+                                    {new SymbolNode("if"), FunctionNode.PrimitiveFunctions["if"]},
+                                    {new SymbolNode("nil"), new NilNode()},
                                     {new SymbolNode("true"), AstNode.MakeNode(true)},
                                     {new SymbolNode("false"), AstNode.MakeNode(false)},
                                 });

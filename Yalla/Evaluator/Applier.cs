@@ -23,6 +23,7 @@ namespace Yalla.Evaluator
                     { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
                     { typeof(DefmacroFunctionNode), (x, y, z, v) => x.Apply((DefmacroFunctionNode)y, z, v) },
                     { typeof(SetFunctionNode), (x, y, z, v) => x.Apply((SetFunctionNode)y, z, v) },
+                    { typeof(IfFunctionNode), (x, y, z, v) => x.Apply((IfFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -342,6 +343,31 @@ namespace Yalla.Evaluator
             }
 
             return value;
+        }
+
+
+        public AstNode Apply(IfFunctionNode function, ListNode arguments, Environment environment)
+        {
+            if (arguments.Children().Count > 3 || arguments.Children().Count < 2)
+            {
+                throw new ArgumentException("Wrong number of arguments given to if! Expected: 2 or 3");
+            }
+
+            var predicate = arguments.Children().ElementAt(0);
+            var successForm = arguments.Children().ElementAt(1);
+
+            var result = evaluator.Evaluate(predicate, environment);
+
+
+            if (result.GetType() == typeof(NilNode) ||
+                (result.GetType() == typeof(BooleanNode) && !((BooleanNode)result).Value))
+            {
+                return arguments.Children().Count == 3 
+                    ? evaluator.Evaluate(arguments.Children().ElementAt(2), environment) 
+                    : new NilNode();
+            }
+
+            return evaluator.Evaluate(successForm, environment);
         }
     }
 }

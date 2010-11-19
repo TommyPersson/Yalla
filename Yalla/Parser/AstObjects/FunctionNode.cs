@@ -19,6 +19,7 @@ namespace Yalla.Parser.AstObjects
                     { "def", new DefineFunctionNode() },
                     { "defmacro", new DefmacroFunctionNode() },
                     { "set!", new SetFunctionNode() },
+                    { "if", new IfFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -148,6 +149,14 @@ namespace Yalla.Parser.AstObjects
         public SetFunctionNode()
         {
             Symbol = "set!";
+        }
+    }
+    
+    public class IfFunctionNode : FunctionNode
+    {
+        public IfFunctionNode()
+        {
+            Symbol = "if";
         }
     }
 }
