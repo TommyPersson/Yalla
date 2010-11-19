@@ -8,7 +8,7 @@ namespace Yalla.Tokenizer
 {
     public class Tokenizer
     {
-        private readonly char[] validSymbolChars = new[] { '+', '-', '%', '#', ':', '@', '!', '¤', '$', '*', '_', '.', '=', '<', '>', '|' };
+        private readonly char[] invalidSymbolChars = new[] { '(', ')', ' ', '\n', '\t', '\r' };
         private readonly char?[] lookAhead = new char?[2];
 
         private string inputBuffer;
@@ -82,11 +82,6 @@ namespace Yalla.Tokenizer
                             return ParseNumber();
                         }
 
-                        if (char.IsLetter(lookAhead[0].Value) || validSymbolChars.Contains(lookAhead[0].Value))
-                        {
-                            return ParseSymbol();
-                        }
-
                         if (lookAhead[0].Value == '~')
                         {
                             if (lookAhead[1].HasValue && lookAhead[1].Value == '@')
@@ -98,6 +93,11 @@ namespace Yalla.Tokenizer
 
                             Consume();
                             return new Token(Token.TokenType.Unquote, "~", currentColumn, currentRow);
+                        }
+
+                        if (!invalidSymbolChars.Contains(lookAhead[0].Value))
+                        {
+                            return ParseSymbol();
                         }
 
                         throw new SyntaxErrorException("Invalid input (" + lookAhead[0].Value + ") at row " + currentRow + ", column " + currentColumn);
@@ -188,8 +188,7 @@ namespace Yalla.Tokenizer
             int beginColumn = currentColumn;
             int beginRow = currentRow;
 
-            while (lookAhead[0].HasValue &&
-                   (char.IsLetter(lookAhead[0].Value) || char.IsDigit(lookAhead[0].Value) || validSymbolChars.Contains(lookAhead[0].Value)))
+            while (lookAhead[0].HasValue && !invalidSymbolChars.Contains(lookAhead[0].Value))
             {
                 tokenBuffer.Append(lookAhead[0].Value);
                 Consume();

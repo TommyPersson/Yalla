@@ -15,6 +15,5 @@ namespace Tests.Evaluator.PrimitiveFunctions
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Value);
         }
-
     }
 }

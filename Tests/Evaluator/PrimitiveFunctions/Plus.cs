@@ -8,7 +8,7 @@ namespace Tests.Evaluator.PrimitiveFunctions
     internal class Plus : PrimitiveFunctionTestBase
     {
         [Test]
-        public void ShallBeAbleTo()
+        public void ShallBeAbleToAddValues()
         {
             var result = Evaluator.Evaluate("(+ 1 2 (+ 3 4))") as IntegerNode;
 

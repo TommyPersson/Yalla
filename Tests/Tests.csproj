@@ -49,10 +49,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Evaluator\PrimitiveFunctions\Def.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Equals.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Plus.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\And.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Cons.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\DefMacro.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\DotNetInterop.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Lambda.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\List.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Or.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\PrimitiveFunctionTestBase.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Set!.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Evaluator\BackquoteExpansion.cs" />
     <Compile Include="Evaluator\Core.cs" />
-    <Compile Include="Evaluator\PrimitiveFunctions.cs" />
     <Compile Include="Parser\ParserTests.cs" />
     <Compile Include="Tokenizer\TokenizerTests.cs" />
   </ItemGroup>
@@ -62,6 +73,7 @@
       <Name>Yalla</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -8,21 +8,21 @@ namespace Yalla.Evaluator
     public class Evaluator
     {
         private readonly Environment globalEnvironment =
-            new Environment
-                {
-                    { new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"] },
-                    { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
-                    { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
-                    { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
-                    { new SymbolNode("list"), FunctionNode.PrimitiveFunctions["list"] },
-                    { new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"] },
-                    { new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"] },
-                    { new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"] },
-                    { new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"] },
-                    { new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"] },
-                    { new SymbolNode("true"), AstNode.MakeNode(true) },
-                    { new SymbolNode("false"), AstNode.MakeNode(false) },
-                };
+            new Environment(new Dictionary<SymbolNode, AstNode>
+                                {
+                                    {new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"]},
+                                    {new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"]},
+                                    {new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"]},
+                                    {new SymbolNode("="), FunctionNode.PrimitiveFunctions["="]},
+                                    {new SymbolNode("list"), FunctionNode.PrimitiveFunctions["list"]},
+                                    {new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"]},
+                                    {new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"]},
+                                    {new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"]},
+                                    {new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"]},
+                                    {new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"]},
+                                    {new SymbolNode("true"), AstNode.MakeNode(true)},
+                                    {new SymbolNode("false"), AstNode.MakeNode(false)},
+                                });
 
         private readonly Parser.Parser parser;
         private readonly Applier applier;
@@ -58,7 +58,7 @@ namespace Yalla.Evaluator
             {
                 foreach (var environmentExtension in environmentExtensions)
                 {
-                    globalEnvironment.Add(environmentExtension.Key, environmentExtension.Value);
+                    globalEnvironment.DefineSymbol(environmentExtension.Key, environmentExtension.Value);
                 }
             }
         }
@@ -128,9 +128,9 @@ namespace Yalla.Evaluator
 
         public AstNode Evaluate(SymbolNode node, Environment environment)
         {
-            if (environment.ContainsKey(node))
+            if (environment.CanLookUpSymbol(node))
             {
-                return environment[node];               
+                return environment.LookUpSymbol(node);               
             }
 
             if (node.Name.StartsWith("."))

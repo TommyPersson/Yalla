@@ -212,30 +212,62 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("Parameters must be symbols!");
             }
 
-            return new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), body.Children(), environment.Copy());
+            return new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), body.Children(), environment.CreateChildEnvironment());
         }
 
         public AstNode Apply(ProcedureNode procedure, ListNode arguments, Environment environment)
         {
-            if (arguments.Children().Count != procedure.Parameters.Count())
+            if (arguments.Children().Count != procedure.Parameters.Count() && !procedure.Parameters.Select(x => x.Name).Contains("&"))
             {
                 throw new ArgumentException("Wrong number of arguments given to procedure! Expected: " + procedure.Parameters.Count());
             }
 
-            var localEnv = procedure.Environment.Copy();
+            var localEnv = procedure.Environment.CreateChildEnvironment();
             
             for (int i = 0; i < procedure.Parameters.Count(); ++i)
             {
+                AstNode evaluatedArgument;
+                bool finished = false;
                 var parameterSymbol = procedure.Parameters.ElementAt(i);
-                var evaluatedArgument = 
-                    procedure.IsMacro 
-                    ? arguments.Children().ElementAt(i) 
-                    : evaluator.Evaluate(arguments.Children().ElementAt(i), environment);
 
-                localEnv.Add(parameterSymbol, evaluatedArgument);
+                if (parameterSymbol.Name == "&")
+                {
+                    parameterSymbol = procedure.Parameters.ElementAt(i + 1);
+
+                    evaluatedArgument =
+                        procedure.IsMacro ? new ListNode(arguments.Children().Skip(i).ToList())
+                        : new ListNode(arguments.Children().Skip(i).Select(arg => evaluator.Evaluate(arg, environment)).ToList());
+
+                    localEnv.DefineSymbol(parameterSymbol, evaluatedArgument);
+
+                    finished = true;
+                }
+                else
+                {
+                    evaluatedArgument =
+                        procedure.IsMacro
+                            ? arguments.Children().ElementAt(i)
+                            : evaluator.Evaluate(arguments.Children().ElementAt(i), environment);
+                }
+
+                localEnv.DefineSymbol(parameterSymbol, evaluatedArgument);
+
+                if (finished)
+                {
+                    break;
+                }
             }
 
-            return evaluator.Evaluate(evaluator.Evaluate(procedure.Body, localEnv), environment);
+            var res = evaluator.Evaluate(procedure.Body, localEnv);
+
+            if (procedure.IsMacro)
+            {
+                return evaluator.Evaluate(res, environment);
+            }
+            else
+            {
+                return res;
+            }
         }
 
         public AstNode Apply(DefineFunctionNode function, ListNode arguments, Environment environment)
@@ -256,7 +288,7 @@ namespace Yalla.Evaluator
 
             var result = evaluator.Evaluate(valueForm, environment);
 
-            environment[symbol] = result;
+            environment.DefineSymbol(symbol, result);
 
             return symbol;
         }
@@ -282,9 +314,9 @@ namespace Yalla.Evaluator
 
             var body = arguments.Children().ElementAt(2);
 
-            var macro = new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), new[] { body }, environment.Copy(), true);
+            var macro = new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), new[] { body }, environment.CreateChildEnvironment(), true);
             
-            environment[symbol] = macro;
+            environment.DefineSymbol(symbol, macro);
 
             return symbol;
         }
@@ -302,13 +334,9 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("First argument to set! not a symbol!");
             }
 
-            var value = arguments.Children().ElementAt(1);
+            var value = evaluator.Evaluate(arguments.Children().ElementAt(1), environment);
 
-            if (environment.ContainsKey(symbol))
-            {
-                environment[symbol] = value;
-            }
-            else
+            if (!environment.SetSymbolValue(symbol, value))
             {
                 throw new ArgumentException("Symbol '" + symbol.Name + "' not defined!");
             }
