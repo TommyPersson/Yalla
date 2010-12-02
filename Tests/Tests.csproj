@@ -55,6 +55,7 @@
     <Compile Include="Evaluator\PrimitiveFunctions\Def.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Equals.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\If.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Let.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Plus.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\And.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Cons.cs" />

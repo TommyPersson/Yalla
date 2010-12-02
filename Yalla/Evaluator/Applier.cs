@@ -24,6 +24,7 @@ namespace Yalla.Evaluator
                     { typeof(DefmacroFunctionNode), (x, y, z, v) => x.Apply((DefmacroFunctionNode)y, z, v) },
                     { typeof(SetFunctionNode), (x, y, z, v) => x.Apply((SetFunctionNode)y, z, v) },
                     { typeof(IfFunctionNode), (x, y, z, v) => x.Apply((IfFunctionNode)y, z, v) },
+                    { typeof(LetFunctionNode), (x, y, z, v) => x.Apply((LetFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -161,11 +162,11 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("No argument passed to native method call!");
             }
 
-            var obj = evaluator.Evaluate(arguments.Children().First(), environment) as ObjectNode;
-            if (obj == null)
+            var obj = evaluator.Evaluate(arguments.Children().First(), environment); // as ObjectNode;
+            /*if (obj == null)
             {
                 throw new ArgumentException("Argument to native method call not an object!");
-            }
+            }*/
 
             var argNodes = arguments.Children().Skip(1).Select(x => evaluator.Evaluate(x, environment) as ObjectNode);
             if (argNodes.Any(x => x == null))
@@ -175,18 +176,39 @@ namespace Yalla.Evaluator
 
             var args = argNodes.Select(x => x.Object);
             var argTypes = args.Select(x => x.GetType());
-            var otype = obj.Object.GetType();
+
+
+            Type otype = null;
+
+            if (obj is ObjectNode)
+            {
+                otype = ((ObjectNode)obj).Object.GetType();
+            }
+            else
+            {
+                otype = obj.GetType();
+            }
 
             var omethod = otype.GetMethod(method.Name, argTypes.ToArray());
             if (omethod != null)
             {
-                return AstNode.MakeNode(omethod.Invoke(obj.Object, args.ToArray()));
+                if (obj is ObjectNode)
+                {
+                    return AstNode.MakeNode(omethod.Invoke(((ObjectNode)obj).Object, args.ToArray()));
+                }
+
+                return AstNode.MakeNode(omethod.Invoke(obj, args.ToArray()));
             }
 
             var oproperty = otype.GetProperty(method.Name);
             if (oproperty != null)
             {
-                return AstNode.MakeNode(oproperty.GetValue(obj.Object, null));
+                if (obj is ObjectNode)
+                {
+                    return AstNode.MakeNode(oproperty.GetValue(((ObjectNode)obj).Object, null));
+                }
+
+                return AstNode.MakeNode(oproperty.GetValue(obj, null));
             }
 
             var ofield = otype.GetField(method.Name);
@@ -344,8 +366,7 @@ namespace Yalla.Evaluator
 
             return value;
         }
-
-
+        
         public AstNode Apply(IfFunctionNode function, ListNode arguments, Environment environment)
         {
             if (arguments.Children().Count > 3 || arguments.Children().Count < 2)
@@ -368,6 +389,30 @@ namespace Yalla.Evaluator
             }
 
             return evaluator.Evaluate(successForm, environment);
+        }
+
+        public AstNode Apply(LetFunctionNode function, ListNode arguments, Environment environment)
+        {
+            /*
+             * (let ((var-a form-a) (var-b form-b)) (+ var-a var-b))
+             */
+            
+            var bindingList = (ListNode) arguments.First();
+            var bodyforms = arguments.Rest().Children().AsEnumerable();
+
+            var localEnv = environment.CreateChildEnvironment();
+
+            foreach (var binding in bindingList.Children().OfType<ListNode>())
+            {
+                var symbol = (SymbolNode)binding.First();
+                var form = binding.Rest().First();
+
+                var value = evaluator.Evaluate(form, localEnv);
+
+                localEnv.DefineSymbol(symbol, value);
+            }
+
+            return evaluator.Evaluate(bodyforms, localEnv);
         }
     }
 }

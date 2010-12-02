@@ -33,6 +33,11 @@ namespace Yalla.Parser.AstObjects
             return new ListNode(list.Skip(1).ToList());
         }
 
+        public bool IsEmpty()
+        {
+            return list.Count == 0;
+        }
+
         public ListNode Append(ListNode applist)
         {
             return new ListNode(list.Concat(applist.Children()).ToList());

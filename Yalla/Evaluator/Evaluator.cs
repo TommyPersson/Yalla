@@ -24,9 +24,10 @@ namespace Yalla.Evaluator
                                     { new SymbolNode("defmacro"), FunctionNode.PrimitiveFunctions["defmacro"] },
                                     { new SymbolNode("set!"), FunctionNode.PrimitiveFunctions["set!"] },
                                     { new SymbolNode("if"), FunctionNode.PrimitiveFunctions["if"] },
+                                    { new SymbolNode("let"), FunctionNode.PrimitiveFunctions["let"] },
                                     { new SymbolNode("nil"), new NilNode() },
                                     { new SymbolNode("true"), AstNode.MakeNode(true) },
-                                    { new SymbolNode("false"), AstNode.MakeNode(false) },
+                                    { new SymbolNode("false"), AstNode.MakeNode(false) }
                                 });
 
         private readonly Parser.Parser parser;

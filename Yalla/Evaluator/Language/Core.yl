@@ -12,3 +12,15 @@
    
 (defun println (l)
   (when *stdout* (.WriteLine *stdout* l)))
+
+(defun first (lst)
+  (.First lst))
+
+(defun rest (lst)
+  (.Rest lst))
+
+(defun empty? (lst)
+  (.IsEmpty lst))
+
+(defun second (lst)
+  (first (rest lst)))
