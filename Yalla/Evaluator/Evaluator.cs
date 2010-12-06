@@ -125,14 +125,19 @@ namespace Yalla.Evaluator
 
         public AstNode Evaluate(SymbolNode node, Environment environment)
         {
-            if (environment.CanLookUpSymbol(node))
-            {
-                return environment.LookUpSymbol(node);               
-            }
-
             if (node.Name.StartsWith("."))
             {
                 return new NativeMethodFunctionNode(node.Name.Substring(1));
+            }
+
+            if (node.Name.EndsWith("."))
+            {
+                return new NativeConstructorFunctionNode(node.Name.TrimEnd('.'));
+            }
+
+            if (environment.CanLookUpSymbol(node))
+            {
+                return environment.LookUpSymbol(node);               
             }
 
             throw new ArgumentException("Could not resolve symbol: " + node.Name);

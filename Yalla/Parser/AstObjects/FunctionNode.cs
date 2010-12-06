@@ -46,6 +46,16 @@ namespace Yalla.Parser.AstObjects
         public string Name { get; private set; }
     }
 
+    public class NativeConstructorFunctionNode : FunctionNode
+    {
+        public NativeConstructorFunctionNode(string typename)
+        {
+            Typename = typename;
+        }
+
+        public string Typename { get; private set; }
+    }
+
     public class AddFunctionNode : FunctionNode
     {
         public AddFunctionNode()

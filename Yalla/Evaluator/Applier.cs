@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Yalla.Parser.AstObjects;
 
 namespace Yalla.Evaluator
@@ -18,6 +20,7 @@ namespace Yalla.Evaluator
                     { typeof(ListFunctionNode), (x, y, z, v) => x.Apply((ListFunctionNode)y, z, v) },
                     { typeof(ConsFunctionNode), (x, y, z, v) => x.Apply((ConsFunctionNode)y, z, v) },
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
+                    { typeof(NativeConstructorFunctionNode), (x, y, z, v) => x.Apply((NativeConstructorFunctionNode)y, z, v) },
                     { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
                     { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
@@ -59,7 +62,7 @@ namespace Yalla.Evaluator
 
                 if (arg is DecimalNode)
                 {
-                    result += ((DecimalNode) arg).Value;
+                    result += ((DecimalNode)arg).Value;
                 }
             }
 
@@ -218,6 +221,40 @@ namespace Yalla.Evaluator
             }
 
             throw new ArgumentException(method.Name + " is not a valid method, property or field on " + otype);
+        }
+        
+        public AstNode Apply(NativeConstructorFunctionNode constructor, ListNode arguments, Environment environment)
+        {
+            var typeName = constructor.Typename;
+
+            var type = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(typeName, false, false)).FirstOrDefault(x => x != null);
+
+            if (type == null)
+            {
+                throw new ArgumentException("Type '" + typeName + "' not found!");
+            }
+
+            var argNodes = arguments.Children().Select(x => evaluator.Evaluate(x, environment) as ObjectNode);
+            if (argNodes.Any(x => x == null))
+            {
+                throw new ArgumentException("Arguments to constructor must be objects.");
+            }
+
+            var args = argNodes.Select(x => x.Object).ToArray();
+            var argTypes = args.Select(x => x.GetType()).ToArray();
+
+            object obj = null;
+
+            try
+            {
+                obj = Activator.CreateInstance(type, args);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("No constructor for '" + typeName + "' with argument types '" + argTypes.Select(x => x.Name).Aggregate((s1, s2) => s1 + "', '" + s2) + "'");
+            }
+            
+            return AstNode.MakeNode(obj);
         }
 
         public AstNode Apply(LambdaFunctionNode function, ListNode arguments, Environment environment)
