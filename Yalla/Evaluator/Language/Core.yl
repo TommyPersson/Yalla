@@ -13,9 +13,18 @@
 (defun println (l)
   (when *stdout* (.WriteLine *stdout* l)))
 
-;;; Equality
+;;; Conversions
 
+(def int16 System.Convert/ToInt16)
+(def short System.Convert/ToInt16)
 
+(def int32 System.Convert/ToInt32)
+(def int System.Convert/ToInt32)
+
+(def int64 System.Convert/ToInt64)
+(def long System.Convert/ToInt64)
+
+(def string System.Convert/ToString)
 
 ;;; Lists
 
@@ -32,3 +41,10 @@
 
 (defun second (lst)
   (first (rest lst)))
+
+(defmacro dolist (binding & body)
+  `(let ((list123 ~(second binding))
+         (~(first binding) (first list123)))
+     (do ~@body)
+     (unless (empty? (rest list123))
+       (dolist (~(first binding) (rest list123)) ~@body))))

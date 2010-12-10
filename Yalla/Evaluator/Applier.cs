@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Yalla.Parser.AstObjects;
 
@@ -173,8 +172,7 @@ namespace Yalla.Evaluator
             var args = argNodes.Select(x => x.Object);
             var argTypes = args.Select(x => x.GetType());
 
-
-            Type otype = null;
+            Type otype;
 
             if (obj is ObjectNode)
             {
@@ -236,7 +234,7 @@ namespace Yalla.Evaluator
             var args = argNodes.Select(x => x.Object).ToArray();
             var argTypes = args.Select(x => x.GetType()).ToArray();
 
-            object obj = null;
+            object obj;
 
             try
             {
@@ -249,7 +247,6 @@ namespace Yalla.Evaluator
             
             return AstNode.MakeNode(obj);
         }
-
 
         public AstNode Apply(NativeStaticMethodFunctionNode staticMethod, ListNode arguments, Environment environment)
         {
@@ -272,7 +269,7 @@ namespace Yalla.Evaluator
             var args = argNodes.Select(x => x.Object).ToArray();
             var argTypes = args.Select(x => x.GetType()).ToArray();
 
-            object res = null;
+            object res;
 
             try
             {
@@ -355,10 +352,8 @@ namespace Yalla.Evaluator
             {
                 return evaluator.Evaluate(res, environment);
             }
-            else
-            {
-                return res;
-            }
+
+            return res;
         }
 
         public AstNode Apply(DefineFunctionNode function, ListNode arguments, Environment environment)
@@ -446,7 +441,6 @@ namespace Yalla.Evaluator
             var successForm = arguments.Children().ElementAt(1);
 
             var result = evaluator.Evaluate(predicate, environment);
-
 
             if (result.GetType() == typeof(NilNode) ||
                 (result.GetType() == typeof(BooleanNode) && !((BooleanNode)result).Value))

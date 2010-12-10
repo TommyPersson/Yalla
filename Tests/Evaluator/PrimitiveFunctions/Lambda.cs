@@ -39,7 +39,6 @@ namespace Tests.Evaluator.PrimitiveFunctions
             Assert.AreEqual(3, result.Value);
         }
 
-
         [Test]
         public void LabmdaListShouldAllowBodyExpressions()
         {
