@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -59,6 +60,9 @@ namespace Yalla.Tokenizer
                     case '\t':
                     case '\n':
                         ConsumeWhitespace();
+                        break;
+                    case ';':
+                        ConsumeComment();
                         break;
                     case '(':
                         Consume();
@@ -202,6 +206,14 @@ namespace Yalla.Tokenizer
             while (lookAhead[0] == ' ' ||
                    lookAhead[0] == '\t' ||
                    lookAhead[0] == '\n')
+            {
+                Consume();
+            }
+        }
+
+        private void ConsumeComment()
+        {
+            while (lookAhead[0] != '\n')
             {
                 Consume();
             }

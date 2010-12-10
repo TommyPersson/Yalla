@@ -70,7 +70,7 @@ namespace Yalla.Parser
                     case Token.TokenType.Splice:
                         lists.Peek().Item2.Push(QuoteType.Splice);
                         break;
-
+                        
                     case Token.TokenType.EndOfFile:
                         if (lists.Count > 1)
                         {

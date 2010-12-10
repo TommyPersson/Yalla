@@ -24,5 +24,14 @@ namespace Tests.Evaluator.PrimitiveFunctions
             Assert.IsNotNull(result);
             Assert.AreEqual("World!", result.Value);
         }
+
+        [Test]
+        public void ShallBeAbleToConstructNativeObjects()
+        {
+            var result = Evaluator.Evaluate("(System.String. (.ToCharArray \"Hello World!\"))") as StringNode;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Hello World!", result.Value);
+        }
     }
 }

@@ -17,7 +17,6 @@ namespace Yalla.Evaluator
                     { typeof(AndFunctionNode), (x, y, z, v) => x.Apply((AndFunctionNode)y, z, v) },
                     { typeof(OrFunctionNode), (x, y, z, v) => x.Apply((OrFunctionNode)y, z, v) },
                     { typeof(EqualFunctionNode), (x, y, z, v) => x.Apply((EqualFunctionNode)y, z, v) },
-                    { typeof(ListFunctionNode), (x, y, z, v) => x.Apply((ListFunctionNode)y, z, v) },
                     { typeof(ConsFunctionNode), (x, y, z, v) => x.Apply((ConsFunctionNode)y, z, v) },
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
                     { typeof(NativeConstructorFunctionNode), (x, y, z, v) => x.Apply((NativeConstructorFunctionNode)y, z, v) },
@@ -131,13 +130,6 @@ namespace Yalla.Evaluator
             }
 
             return AstNode.MakeNode(result);
-        }
-
-        public AstNode Apply(ListFunctionNode function, ListNode arguments, Environment environment)
-        {
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToList();
-
-            return AstNode.MakeNode(args);
         }
 
         public AstNode Apply(ConsFunctionNode function, ListNode arguments, Environment environment)

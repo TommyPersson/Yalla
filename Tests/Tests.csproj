@@ -49,9 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Evaluator\Language\FlowControl.cs" />
-    <Compile Include="Evaluator\Language\IO.cs" />
-    <Compile Include="Evaluator\Language\LanguageTestBase.cs" />
+    <Compile Include="Evaluator\LanguageCore\FlowControl.cs" />
+    <Compile Include="Evaluator\LanguageCore\IO.cs" />
+    <Compile Include="Evaluator\LanguageCore\LanguageTestBase.cs" />
+    <Compile Include="Evaluator\LanguageCore\Lists.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Def.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Equals.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\If.cs" />
@@ -62,7 +63,6 @@
     <Compile Include="Evaluator\PrimitiveFunctions\DefMacro.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\DotNetInterop.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Lambda.cs" />
-    <Compile Include="Evaluator\PrimitiveFunctions\List.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Or.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\PrimitiveFunctionTestBase.cs" />
     <Compile Include="Evaluator\PrimitiveFunctions\Set!.cs" />

@@ -13,7 +13,6 @@ namespace Yalla.Parser.AstObjects
                     { "=", new EqualFunctionNode() },
                     { "and", new AndFunctionNode() },
                     { "or", new OrFunctionNode() },
-                    { "list", new ListFunctionNode() },
                     { "cons", new ConsFunctionNode() },
                     { "lambda", new LambdaFunctionNode() },
                     { "def", new DefineFunctionNode() },
@@ -93,14 +92,6 @@ namespace Yalla.Parser.AstObjects
         public EqualFunctionNode()
         {
             Symbol = "=";
-        }
-    }
-
-    public class ListFunctionNode : FunctionNode
-    {
-        public ListFunctionNode()
-        {
-            Symbol = "list";
         }
     }
 

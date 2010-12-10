@@ -98,5 +98,18 @@ namespace Tests.Tokenizer
             Assert.AreEqual("-123", tokens3.ElementAt(0).Value);
             Assert.AreEqual(Token.TokenType.EndOfFile, tokens3.ElementAt(1).Type);
         }
+        
+        [Test]
+        public void ShallIgnoreComments()
+        {
+            var tokenizer = new Yalla.Tokenizer.Tokenizer();
+            var tokens = tokenizer.Tokenize("; comment\n" +
+                                            "1");
+
+            Assert.AreEqual(2, tokens.Count());
+            Assert.AreEqual(Token.TokenType.Integer, tokens.ElementAt(0).Type);
+            Assert.AreEqual("1", tokens.ElementAt(0).Value);
+            Assert.AreEqual(Token.TokenType.EndOfFile, tokens.ElementAt(1).Type);
+        }
     }
 }

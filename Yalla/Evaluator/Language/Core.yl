@@ -13,6 +13,14 @@
 (defun println (l)
   (when *stdout* (.WriteLine *stdout* l)))
 
+;;; Equality
+
+
+
+;;; Lists
+
+(defun list (& args) args)
+
 (defun first (lst)
   (.First lst))
 
