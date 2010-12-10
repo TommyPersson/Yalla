@@ -18,8 +18,6 @@ namespace Yalla.Evaluator
                     { typeof(OrFunctionNode), (x, y, z, v) => x.Apply((OrFunctionNode)y, z, v) },
                     { typeof(EqualFunctionNode), (x, y, z, v) => x.Apply((EqualFunctionNode)y, z, v) },
                     { typeof(ConsFunctionNode), (x, y, z, v) => x.Apply((ConsFunctionNode)y, z, v) },
-                    { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
-                    { typeof(NativeConstructorFunctionNode), (x, y, z, v) => x.Apply((NativeConstructorFunctionNode)y, z, v) },
                     { typeof(LambdaFunctionNode), (x, y, z, v) => x.Apply((LambdaFunctionNode)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
                     { typeof(DefineFunctionNode), (x, y, z, v) => x.Apply((DefineFunctionNode)y, z, v) },
@@ -27,6 +25,9 @@ namespace Yalla.Evaluator
                     { typeof(SetFunctionNode), (x, y, z, v) => x.Apply((SetFunctionNode)y, z, v) },
                     { typeof(IfFunctionNode), (x, y, z, v) => x.Apply((IfFunctionNode)y, z, v) },
                     { typeof(LetFunctionNode), (x, y, z, v) => x.Apply((LetFunctionNode)y, z, v) },
+                    { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
+                    { typeof(NativeConstructorFunctionNode), (x, y, z, v) => x.Apply((NativeConstructorFunctionNode)y, z, v) },
+                    { typeof(NativeStaticMethodFunctionNode), (x, y, z, v) => x.Apply((NativeStaticMethodFunctionNode)y, z, v) },
                 };
 
         private readonly Evaluator evaluator;
@@ -217,7 +218,7 @@ namespace Yalla.Evaluator
         
         public AstNode Apply(NativeConstructorFunctionNode constructor, ListNode arguments, Environment environment)
         {
-            var typeName = constructor.Typename;
+            var typeName = constructor.TypeName;
 
             var type = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(typeName, false, false)).FirstOrDefault(x => x != null);
 
@@ -247,6 +248,44 @@ namespace Yalla.Evaluator
             }
             
             return AstNode.MakeNode(obj);
+        }
+
+
+        public AstNode Apply(NativeStaticMethodFunctionNode staticMethod, ListNode arguments, Environment environment)
+        {
+            var typeName = staticMethod.TypeName;
+            var methodName = staticMethod.MethodName;
+
+            var type = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(typeName, false, false)).FirstOrDefault(x => x != null);
+
+            if (type == null)
+            {
+                throw new ArgumentException("Type '" + typeName + "' not found!");
+            }
+
+            var argNodes = arguments.Children().Select(x => evaluator.Evaluate(x, environment) as ObjectNode);
+            if (argNodes.Any(x => x == null))
+            {
+                throw new ArgumentException("Arguments to static methods must be objects.");
+            }
+
+            var args = argNodes.Select(x => x.Object).ToArray();
+            var argTypes = args.Select(x => x.GetType()).ToArray();
+
+            object res = null;
+
+            try
+            {
+                var mi = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, null, argTypes, new ParameterModifier[0]);
+
+                res = mi.Invoke(null, args);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException("Static method '" + typeName + "/" + methodName + "' with argument types '" + argTypes.Select(x => x.Name).Aggregate((s1, s2) => s1 + "', '" + s2) + "' not found!");
+            }
+
+            return AstNode.MakeNode(res);
         }
 
         public AstNode Apply(LambdaFunctionNode function, ListNode arguments, Environment environment)

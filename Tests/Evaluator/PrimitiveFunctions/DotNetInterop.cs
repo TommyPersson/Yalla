@@ -33,5 +33,14 @@ namespace Tests.Evaluator.PrimitiveFunctions
             Assert.IsNotNull(result);
             Assert.AreEqual("Hello World!", result.Value);
         }
+
+        [Test]
+        public void ShallBeAbleToCallStaticMethods()
+        {
+            var result = Evaluator.Evaluate("(System.String/IsNullOrEmpty \"\")") as BooleanNode;
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Value);
+        }
     }
 }

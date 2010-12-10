@@ -134,6 +134,19 @@ namespace Yalla.Evaluator
                 return new NativeConstructorFunctionNode(node.Name.TrimEnd('.'));
             }
 
+            var split = node.Name.Split('/');
+
+            if (split.Length > 1)
+            {
+                if (split.Length != 2)
+                {
+                    throw new ArgumentException("A symbol may not contain more than one '/'!");
+                }
+
+                return new NativeStaticMethodFunctionNode(split[0], split[1]);
+            }
+            
+
             if (environment.CanLookUpSymbol(node))
             {
                 return environment.LookUpSymbol(node);               
