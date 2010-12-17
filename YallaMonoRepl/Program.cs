@@ -6,7 +6,7 @@ using Yalla.Parser;
 using Yalla.Tokenizer;
 using Environment = Yalla.Evaluator.Environment;
 
-namespace YallaRepl
+namespace YallaMonoRepl
 {
     public class Program
     {
@@ -14,15 +14,15 @@ namespace YallaRepl
         {
             var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), Console.Out, Console.In);
             var prettyPrinter = new PrettyPrinter();
-            			
-            Console.Out.WriteLine("End you statements with <Enter> <Ctrl-Z> <Enter>. Quit with <Ctrl-C>.");
+       		Console.Out.WriteLine(System.Environment.Version);
+            Console.Out.WriteLine("End you statements with <Enter>. (only single line statements allowed)");
 
             while (true)
             {
                 Console.Out.WriteLine();
                 Console.Out.Write("yalla> ");
 
-                var input = Console.In.ReadToEnd();
+                var input = Console.In.ReadLine();
                 
                 Console.Out.Write("=> ");
                 try
