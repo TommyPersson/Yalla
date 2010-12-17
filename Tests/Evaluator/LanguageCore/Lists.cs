@@ -25,10 +25,9 @@ namespace Tests.Evaluator.Language
         {
             const string Program = "(first (list 1 2 3))";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Value);
+            Assert.AreEqual(1, result);
         }
 
         [Test]
@@ -50,14 +49,11 @@ namespace Tests.Evaluator.Language
             const string Program1 = "(empty? (list 1 2 3))";
             const string Program2 = "(empty? (list))";
 
-            var result1 = Evaluator.Evaluate(Program1) as BooleanNode;
-            var result2 = Evaluator.Evaluate(Program2) as BooleanNode;
+            var result1 = (bool)Evaluator.Evaluate(Program1);
+            var result2 = (bool)Evaluator.Evaluate(Program2);
 
-            Assert.IsNotNull(result1);
-            Assert.AreEqual(false, result1.Value);
-
-            Assert.IsNotNull(result2);
-            Assert.AreEqual(true, result2.Value);
+            Assert.AreEqual(false, result1);
+            Assert.AreEqual(true, result2);
         }
     }
 }

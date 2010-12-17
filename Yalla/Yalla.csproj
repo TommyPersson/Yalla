@@ -51,23 +51,18 @@
     <Compile Include="Evaluator\Environment.cs" />
     <Compile Include="Evaluator\Evaluator.cs" />
     <Compile Include="Parser\AstObjects\AstNode.cs" />
-    <Compile Include="Parser\AstObjects\BooleanNode.cs" />
     <Compile Include="Parser\AstObjects\BackquoteNode.cs" />
     <Compile Include="Parser\AstObjects\NilNode.cs" />
     <Compile Include="Parser\AstObjects\SpliceNode.cs" />
     <Compile Include="Parser\AstObjects\UnquoteNode.cs" />
     <Compile Include="Parser\AstObjects\FunctionNode.cs" />
-    <Compile Include="Parser\AstObjects\ObjectNode.cs" />
     <Compile Include="Parser\AstObjects\QuoteNode.cs" />
-    <Compile Include="Parser\AstObjects\StringNode.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="PrettyPrinter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Parser\AstObjects\SymbolNode.cs" />
-    <Compile Include="Parser\AstObjects\DecimalNode.cs" />
-    <Compile Include="Parser\AstObjects\IntegerNode.cs" />
     <Compile Include="Parser\AstObjects\ListNode.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -6,24 +6,24 @@ namespace Yalla.Parser.AstObjects
 {
     public class ListNode : AstNode
     {
-        private readonly IList<AstNode> list;
+        private readonly IList<object> list;
         
         public ListNode()
         {
-            list = new List<AstNode>();
+            list = new List<object>();
         }
 
-        public ListNode(IList<AstNode> list)
+        public ListNode(IList<object> list)
         {
             this.list = list;
         }
 
-        public IList<AstNode> Children()
+        public IList<object> Children()
         {
             return list;
         }
         
-        public AstNode First()
+        public object First()
         {
             return list.First();
         }
@@ -43,7 +43,7 @@ namespace Yalla.Parser.AstObjects
             return new ListNode(list.Concat(applist.Children()).ToList());
         }
 
-        public ListNode AddChild(AstNode obj)
+        public ListNode AddChild(object obj)
         {
             list.Add(obj);
             return this;

@@ -21,10 +21,9 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("123");
 
-            var intNode = result.First() as IntegerNode;
+            var intNode = (int)result.First();
 
-            Assert.IsNotNull(intNode);
-            Assert.AreEqual(123, intNode.Value);
+            Assert.AreEqual(123, intNode);
         }
 
         [Test]
@@ -32,10 +31,9 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("3.4");
 
-            var doubleNode = result.First() as DecimalNode;
+            var doubleNode = (decimal)result.First();
 
-            Assert.IsNotNull(doubleNode);
-            Assert.AreEqual(3.4, doubleNode.Value);
+            Assert.AreEqual(3.4, doubleNode);
         }
 
         [Test]
@@ -43,10 +41,9 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("-3.4");
 
-            var doubleNode = result.First() as DecimalNode;
+            var doubleNode = (decimal)result.First();
 
-            Assert.IsNotNull(doubleNode);
-            Assert.AreEqual(-3.4, doubleNode.Value);
+            Assert.AreEqual(-3.4, doubleNode);
         }
 
         [Test]
@@ -54,10 +51,10 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("\"Hello World!\"");
 
-            var stringNode = result.First() as StringNode;
+            var stringNode = result.First() as string;
 
             Assert.IsNotNull(stringNode);
-            Assert.AreEqual("Hello World!", stringNode.Value);
+            Assert.AreEqual("Hello World!", stringNode);
         }
 
         [Test]
@@ -119,8 +116,8 @@ namespace Tests.Parser
             Assert.IsNotNull(listNode);
             Assert.AreEqual(3, listNode.Children().Count);
             Assert.AreEqual(new SymbolNode("+"), listNode.Children().ElementAt(0));
-            Assert.AreEqual(new IntegerNode(1), listNode.Children().ElementAt(1));
-            Assert.AreEqual(new IntegerNode(2), listNode.Children().ElementAt(2));
+            Assert.AreEqual(1, listNode.Children().ElementAt(1));
+            Assert.AreEqual(2, listNode.Children().ElementAt(2));
         }
 
         [Test]

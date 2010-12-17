@@ -26,7 +26,7 @@ namespace Tests.Evaluator
         [Test]
         public void UnqoutedValuesAreEvaluated()
         {
-            Assert.AreEqual(1, ((IntegerNode)Evaluator.Evaluate("(def a 1)\n`~a")).Value);
+            Assert.AreEqual(1, ((int)Evaluator.Evaluate("(def a 1)\n`~a")));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Tests.Evaluator
             Assert.AreEqual("b", ((SymbolNode)result.Children().ElementAt(1)).Name);
             Assert.AreEqual("c", ((SymbolNode)result.Children().ElementAt(2)).Name);
             Assert.AreEqual("d", ((SymbolNode)result.Children().ElementAt(3)).Name);
-            Assert.AreEqual(3, ((IntegerNode)result.Children().ElementAt(4)).Value);
+            Assert.AreEqual(3, ((int)result.Children().ElementAt(4)));
         }
     }
 }

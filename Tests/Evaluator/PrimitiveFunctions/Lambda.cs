@@ -21,29 +21,27 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void CanRunLambdaProcedure()
         {
-            var result = Evaluator.Evaluate("((lambda (x y) (+ x y)) 1 2)") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("((lambda (x y) (+ x y)) 1 2)");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
         public void LambdaBodiesCanContainMultipleForms()
         {
-            var result = Evaluator.Evaluate("((lambda ()\n" + 
+            var result = (int)Evaluator.Evaluate("((lambda ()\n" + 
                                             "  (def z 1)\n" + 
                                             "  (set! z (+ z 2))\n" +
-                                            "  z))") as IntegerNode;
+                                            "  z))");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
         public void LabmdaListShouldAllowBodyExpressions()
         {
             const string Program = "(def fn (lambda (& body) body))\n" +
-                                   "(fn 1 2 3)\n";
+                                     "(fn 1 2 3)\n";
 
             var result = Evaluator.Evaluate(Program) as ListNode;
 
@@ -51,9 +49,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
 
             var items = result.Children();
 
-            Assert.AreEqual(1, ((IntegerNode)items[0]).Value);
-            Assert.AreEqual(2, ((IntegerNode)items[1]).Value);
-            Assert.AreEqual(3, ((IntegerNode)items[2]).Value);
+            Assert.AreEqual(1, ((int)items[0]));
+            Assert.AreEqual(2, ((int)items[1]));
+            Assert.AreEqual(3, ((int)items[2]));
         }
     }
 }

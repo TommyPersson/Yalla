@@ -10,37 +10,36 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void NativeMethodsAreSymbolsThatBeginWithADot()
         {
-            var result = Evaluator.Evaluate("(.ToUpper \"Hello World!\")") as StringNode;
+            var result = Evaluator.Evaluate("(.ToUpper \"Hello World!\")") as string;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("HELLO WORLD!", result.Value);
+            Assert.AreEqual("HELLO WORLD!", result);
         }
 
         [Test]
         public void NativeMethodsShouldBeAbleToHaveArguments()
         {
-            var result = Evaluator.Evaluate("(.Substring \"Hello World!\" 6)") as StringNode;
+            var result = Evaluator.Evaluate("(.Substring \"Hello World!\" 6)") as string;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("World!", result.Value);
+            Assert.AreEqual("World!", result);
         }
 
         [Test]
         public void ShallBeAbleToConstructNativeObjects()
         {
-            var result = Evaluator.Evaluate("(System.String. (.ToCharArray \"Hello World!\"))") as StringNode;
+            var result = Evaluator.Evaluate("(System.String. (.ToCharArray \"Hello World!\"))") as string;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Hello World!", result.Value);
+            Assert.AreEqual("Hello World!", result);
         }
 
         [Test]
         public void ShallBeAbleToCallStaticMethods()
         {
-            var result = Evaluator.Evaluate("(System.String/IsNullOrEmpty \"\")") as BooleanNode;
+            var result = (bool)Evaluator.Evaluate("(System.String/IsNullOrEmpty \"\")");
 
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.Value);
+            Assert.IsTrue(result);
         }
     }
 }

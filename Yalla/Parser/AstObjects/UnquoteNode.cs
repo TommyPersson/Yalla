@@ -3,11 +3,11 @@ namespace Yalla.Parser.AstObjects
 {
     public class UnquoteNode : AstNode
     {
-        public UnquoteNode(AstNode value)
+        public UnquoteNode(object value)
         {
             InnerValue = value;
         }
 
-        public AstNode InnerValue { get; private set; }
+        public object InnerValue { get; private set; }
     }
 }

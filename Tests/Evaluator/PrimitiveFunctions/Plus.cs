@@ -10,10 +10,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToAddValues()
         {
-            var result = Evaluator.Evaluate("(+ 1 2 (+ 3 4))") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("(+ 1 2 (+ 3 4))");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(10, result.Value);
+            Assert.AreEqual(10, result);
         }
     }
 }

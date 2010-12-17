@@ -1,5 +1,15 @@
-﻿(defmacro defun (sym params & body)
+﻿;;; Functions
+
+(defmacro defun (sym params & body)
   `(def ~sym (lambda ~params ~@body)))
+
+;;; read/eval/apply
+
+(defun read (str) (.ParseForm *parser* str))
+(defun eval (form) (.Evaluate *evaluator* form))
+(defun apply (fun & args) (.Apply *applier* fun args))
+
+;;; Control flow
 
 (defmacro do (& body)
   `((lambda () ~@body))) 
@@ -9,7 +19,9 @@
 
 (defmacro unless (predicate & body)
   `(if ~predicate nil (do ~@body))) 
-   
+
+;;; IO   
+         
 (defun println (l)
   (when *stdout* (.WriteLine *stdout* l)))
 

@@ -11,23 +11,21 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void LetShallBindVariablesInBindingListToTheLocalEnvironment()
         {
-            var result = Evaluator.Evaluate("(let ((a 1) " + 
-                                            "      (b 2)) " +
-                                            "  (+ a b))") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("(let ((a 1) " + 
+	                                              "      (b 2)) " +
+	                                              "  (+ a b))");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
         public void LetShallEvaluateBindingsInOrder()
         {
-            var result = Evaluator.Evaluate("(let ((a 1) " +
-                                            "      (b (+ a 1))) " +
-                                            "  (+ a b))") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("(let ((a 1) " +
+	                                              "      (b (+ a 1))) " +
+	                                              "  (+ a b))");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
     }
 }

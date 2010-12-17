@@ -134,7 +134,7 @@ namespace Yalla.Parser.AstObjects
 
     public class ProcedureNode : FunctionNode
     {
-        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<AstNode> body, Environment environment, bool isMacro = false)
+        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<object> body, Environment environment, bool isMacro = false)
         {
             Parameters = parameters;
             Body = body;
@@ -144,7 +144,7 @@ namespace Yalla.Parser.AstObjects
 
         public IEnumerable<SymbolNode> Parameters { get; private set; }
 
-        public IEnumerable<AstNode> Body { get; private set; }
+        public IEnumerable<object> Body { get; private set; }
 
         public Environment Environment { get; private set; }
 

@@ -11,7 +11,7 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToSetDefinedVariables()
         {
-            Assert.AreEqual(2, ((IntegerNode)Evaluator.Evaluate("(def x 1)\n(set! x 2)\nx")).Value);
+            Assert.AreEqual(2, ((int)Evaluator.Evaluate("(def x 1)\n(set! x 2)\nx")));
         }
 
         [Test]
@@ -24,27 +24,25 @@ namespace Tests.Evaluator.PrimitiveFunctions
         public void ShallBeAbleToSetVariablesInOutsideScope()
         {
             const string Program = "(def x 2)\n" +
-                                   "((lambda () (set! x 3)))\n" +
-                                   "x";
+                                     "((lambda () (set! x 3)))\n" +
+                                     "x";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
         public void ShallBeAbleToSetVariablesDefinedAfterFunctionDefinition()
         {
             const string Program = "(def fn (lambda () (set! y (+ y 1))))\n" +
-                                   "(def y (+ 1 1))\n" + 
-                                   "(fn)\n" + 
-                                   "y";
+                                     "(def y (+ 1 1))\n" + 
+                                     "(fn)\n" + 
+                                     "y";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
     }
 }

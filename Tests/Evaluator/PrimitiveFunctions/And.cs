@@ -10,9 +10,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToAndValues()
         {
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(and true true)")).Value);
-            Assert.IsFalse(((BooleanNode)Evaluator.Evaluate("(and true false true)")).Value);
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(and)")).Value);
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(and true true)")));
+            Assert.IsFalse(((bool)Evaluator.Evaluate("(and true false true)")));
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(and)")));
         }
     }
 }

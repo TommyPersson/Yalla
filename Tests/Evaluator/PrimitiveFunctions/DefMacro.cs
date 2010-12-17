@@ -10,32 +10,30 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToDefineMacros()
         {
-            var result = Evaluator.Evaluate("(defmacro defun (sym params body) " +
-                                            "  `(def ~sym (lambda ~params ~body))) " +
+            var result = (int)Evaluator.Evaluate("(defmacro defun (sym params body) " +
+	                                              "  `(def ~sym (lambda ~params ~body))) " +
+	
+	                                              "(defun my+ (x y) (+ x y)) " +
+	
+	                                              "(my+ 1 2)");
 
-                                            "(defun my+ (x y) (+ x y)) " +
-
-                                            "(my+ 1 2)") as IntegerNode;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
         public void MacrosShallSupportBodies()
         {
-            var result = Evaluator.Evaluate("(defmacro defun (sym params & body) " +
-                                            "  `(def ~sym (lambda ~params ~@body))) " +
+            var result = (int)Evaluator.Evaluate("(defmacro defun (sym params & body) " +
+	                                              "  `(def ~sym (lambda ~params ~@body))) " +
+	
+	                                              "(defun my+ (x y)" +
+	                                              "  (def z 1)" +
+	                                              "  (set! z (+ x y z)) " +
+	                                              "  z) " +
 
-                                            "(defun my+ (x y)" +
-                                            "  (def z 1)" +
-                                            "  (set! z (+ x y z)) " +
-                                            "  z) " +
+                                                  "(my+ 1 2)");
 
-                                            "(my+ 1 2)") as IntegerNode;
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Value);
+            Assert.AreEqual(4, result);
         }
     }
 }

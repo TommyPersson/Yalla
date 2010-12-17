@@ -20,22 +20,19 @@ namespace Tests.Evaluator
         [Test]
         public void NumberShallEvaluateToNumbers()
         {
-            var result = Evaluator.Evaluate("1") as IntegerNode;
-            var result2 = Evaluator.Evaluate("1.1") as DecimalNode;
+            var result = (int)Evaluator.Evaluate("1");
+            var result2 = (decimal)Evaluator.Evaluate("1.1");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Value);
-            Assert.IsNotNull(result2);
-            Assert.AreEqual(1.1, result2.Value);
+            Assert.AreEqual(1, result);
+            Assert.AreEqual(1.1, result2);
         }
 
         [Test]
         public void EvaluatorReturnsResultOfLastForm()
         {
-            var result = Evaluator.Evaluate("1 2\n3\n\n") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("1 2\n3\n\n");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Value);
+            Assert.AreEqual(3, result);
         }
 
         [Test]
@@ -56,19 +53,18 @@ namespace Tests.Evaluator
         [Test]
         public void StringShouldEvaluateToStrings()
         {
-            var result = Evaluator.Evaluate("\"Hello World!\"") as StringNode;
+            var result = Evaluator.Evaluate("\"Hello World!\"") as string;
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Hello World!", result.Value);
+            Assert.AreEqual("Hello World!", result);
         }
 
         [Test]
         public void ListsShouldEvaluateAsFunctionCalls()
         {
-            var result = Evaluator.Evaluate("(+ 1 2 (+ 3 4))") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("(+ 1 2 (+ 3 4))");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(10, result.Value);
+            Assert.AreEqual(10, result);
         }
 
         [Test]

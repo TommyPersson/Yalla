@@ -5,31 +5,11 @@ namespace Yalla.Parser.AstObjects
 {
     public abstract class AstNode
     {
-        public static AstNode MakeNode(object o)
+        public static object MakeNode(object o)
         {
-            if (o is int)
+            if (o is IList<object>)
             {
-                return new IntegerNode((int)o);
-            }
-
-            if (o is decimal)
-            {
-                return new DecimalNode((decimal)o);
-            }
-
-            if (o is bool)
-            {
-                return new BooleanNode((bool)o);
-            }
-
-            if (o is string)
-            {
-                return new StringNode((string)o);
-            }
-
-            if (o is IList<AstNode>)
-            {
-                return new ListNode((IList<AstNode>)o);
+                return new ListNode((IList<object>)o);
             }
 
             if (o == null)
@@ -42,7 +22,7 @@ namespace Yalla.Parser.AstObjects
                 return o as AstNode;
             }
 
-            return new ObjectNode(o);
+            return o;
         }
     }
 }

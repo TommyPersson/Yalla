@@ -3,11 +3,11 @@ namespace Yalla.Parser.AstObjects
 {
     public class BackquoteNode : AstNode
     {
-        public BackquoteNode(AstNode value)
+        public BackquoteNode(object value)
         {
             InnerValue = value;
         }
 
-        public AstNode InnerValue { get; private set; }
+        public object InnerValue { get; private set; }
     }
 }

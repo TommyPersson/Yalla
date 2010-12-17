@@ -9,20 +9,20 @@ namespace Yalla
 {
     public class PrettyPrinter
     {
-        private readonly IDictionary<Type, Action<PrettyPrinter, AstNode>> nodeTypeDispatch =
-            new Dictionary<Type, Action<PrettyPrinter, AstNode>>
+        private readonly IDictionary<Type, Action<PrettyPrinter, object>> nodeTypeDispatch =
+            new Dictionary<Type, Action<PrettyPrinter, object>>
                 {
-                    { typeof(DecimalNode), (x, y) => x.PrettyPrintSub((DecimalNode)y) },
-                    { typeof(IntegerNode), (x, y) => x.PrettyPrintSub((IntegerNode)y) },
+                    { typeof(decimal), (x, y) => x.PrettyPrintSub((decimal)y) },
+                    { typeof(int), (x, y) => x.PrettyPrintSub((int)y) },
                     { typeof(QuoteNode), (x, y) => x.PrettyPrintSub((QuoteNode)y) },
                     { typeof(BackquoteNode), (x, y) => x.PrettyPrintSub((BackquoteNode)y) },
                     { typeof(UnquoteNode), (x, y) => x.PrettyPrintSub((UnquoteNode)y) },
                     { typeof(SpliceNode), (x, y) => x.PrettyPrintSub((SpliceNode)y) },
-                    { typeof(StringNode), (x, y) => x.PrettyPrintSub((StringNode)y) },
+                    { typeof(string), (x, y) => x.PrettyPrintSub((string)y) },
                     { typeof(SymbolNode), (x, y) => x.PrettyPrintSub((SymbolNode)y) },
                     { typeof(ListNode), (x, y) => x.PrettyPrintSub((ListNode)y) },
-                    { typeof(BooleanNode), (x, y) => x.PrettyPrintSub((BooleanNode)y) },
-                    { typeof(ObjectNode), (x, y) => x.PrettyPrintSub((ObjectNode)y) },
+                    { typeof(bool), (x, y) => x.PrettyPrintSub((bool)y) },
+                    { typeof(object), (x, y) => x.PrettyPrintSub((object)y) },
                     { typeof(NilNode), (x, y) => x.PrettyPrintSub((NilNode)y) },
                     { typeof(FunctionNode), (x, y) => x.PrettyPrintSub((FunctionNode)y) },
                     { typeof(ProcedureNode), (x, y) => x.PrettyPrintSub((ProcedureNode)y) },
@@ -30,7 +30,7 @@ namespace Yalla
 
         private StringWriter stringWriter; 
 
-        public string PrettyPrint(AstNode node)
+        public string PrettyPrint(object node)
         {
             stringWriter = new StringWriter();
 
@@ -39,7 +39,7 @@ namespace Yalla
             return stringWriter.ToString();
         }
 
-        private void PrettyPrintSub(AstNode node)
+        private void PrettyPrintSub(object node)
         {
 			if (nodeTypeDispatch.ContainsKey(node.GetType()))
 			{
@@ -52,14 +52,14 @@ namespace Yalla
 			
         }
 
-        private void PrettyPrintSub(DecimalNode node)
+        private void PrettyPrintSub(decimal node)
         {
-            stringWriter.Write(node.Value);
+            stringWriter.Write(node);
         }
 
-        private void PrettyPrintSub(IntegerNode node)
+        private void PrettyPrintSub(int node)
         {
-            stringWriter.Write(node.Value);
+            stringWriter.Write(node);
         }
 
         private void PrettyPrintSub(QuoteNode node)
@@ -86,9 +86,9 @@ namespace Yalla
             PrettyPrint(node.InnerValue);
         }
 
-        private void PrettyPrintSub(StringNode node)
+        private void PrettyPrintSub(string node)
         {
-            stringWriter.Write("\"" + node.Value + "\"");
+            stringWriter.Write("\"" + node + "\"");
         }
 
         private void PrettyPrintSub(SymbolNode node)
@@ -96,14 +96,9 @@ namespace Yalla
             stringWriter.Write(node.Name);
         }
 
-        private void PrettyPrintSub(BooleanNode node)
+        private void PrettyPrintSub(bool node)
         {
-            stringWriter.Write(node.Value.ToString());
-        }
-
-        private void PrettyPrintSub(ObjectNode node)
-        {
-            stringWriter.Write(node.Object.ToString());
+            stringWriter.Write(node.ToString());
         }
 
         private void PrettyPrintSub(NilNode node)

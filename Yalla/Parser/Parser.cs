@@ -25,13 +25,18 @@ namespace Yalla.Parser
             Unquote,
             Splice
         }
-
-        public IList<AstNode> Parse(string input)
+		
+		public object ParseForm(string input)
+		{
+			return Parse(input)[0];
+		}
+		
+		public IList<object> Parse(string input)
         {
             return Parse(tokenizer.Tokenize(input));
         }
 
-        public IList<AstNode> Parse(IEnumerable<Token> tokens)
+        public IList<object> Parse(IEnumerable<Token> tokens)
         {
             lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
             var result = new Tuple<ListNode, Stack<QuoteType>>(new ListNode(), new Stack<QuoteType>());
@@ -88,16 +93,16 @@ namespace Yalla.Parser
             return result.Item1.Children();
         }
 
-        public AstNode Parse(Token token)
+        public object Parse(Token token)
         {
             switch (token.Type)
             {
-                case Token.TokenType.Integer:
-                    return new IntegerNode(int.Parse(token.Value));
+				case Token.TokenType.Integer:
+                    return int.Parse(token.Value);
                 case Token.TokenType.Double:
-                    return new DecimalNode(decimal.Parse(token.Value, CultureInfo.InvariantCulture));
+                    return decimal.Parse(token.Value, CultureInfo.InvariantCulture);
                 case Token.TokenType.String:
-                    return new StringNode(token.Value);
+                    return token.Value;
                 case Token.TokenType.Symbol:
                     return new SymbolNode(token.Value);
             }
@@ -105,9 +110,9 @@ namespace Yalla.Parser
             return null;
         }
 
-        public void AddNode(AstNode node)
+        public void AddNode(object node)
         {
-            AstNode value = node;
+            object value = node;
 
             while (lists.Peek().Item2.Count > 0)
             {

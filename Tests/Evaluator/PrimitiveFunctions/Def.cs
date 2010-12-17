@@ -10,10 +10,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToDefineVariables()
         {
-            var result = Evaluator.Evaluate("(def x 1)\n(+ x 1)") as IntegerNode;
+            var result = (int)Evaluator.Evaluate("(def x 1)\n(+ x 1)");
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Value);
+            Assert.AreEqual(2, result);
         }
     }
 }

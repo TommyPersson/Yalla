@@ -10,9 +10,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToOrBooleans()
         {
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(or true false)")).Value);
-            Assert.IsFalse(((BooleanNode)Evaluator.Evaluate("(or false false)")).Value);
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(or)")).Value);
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(or true false)")));
+            Assert.IsFalse(((bool)Evaluator.Evaluate("(or false false)")));
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(or)")));
         }
     }
 }

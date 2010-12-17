@@ -12,7 +12,7 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToConsAnObjectAndLists()
         {
-            Assert.AreEqual(2, ((IntegerNode)((ListNode)Evaluator.Evaluate("(cons 1 (list 2))")).Children().ElementAt(1)).Value);
+            Assert.AreEqual(2, ((int)((ListNode)Evaluator.Evaluate("(cons 1 (list 2))")).Children().ElementAt(1)));
         }
 
         [Test]

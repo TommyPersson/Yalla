@@ -9,19 +9,19 @@ namespace Yalla.Evaluator
     {
         private readonly Evaluator evaluator;
 
-        private readonly IDictionary<Type, Func<BackquoteExpander, AstNode, int, Environment, AstNode>> expandFunctions =
-            new Dictionary<Type, Func<BackquoteExpander, AstNode, int, Environment, AstNode>>
+        private readonly IDictionary<Type, Func<BackquoteExpander, object, int, Environment, object>> expandFunctions =
+            new Dictionary<Type, Func<BackquoteExpander, object, int, Environment, object>>
                 {
                     { typeof(BackquoteNode), (x, y, z, t) => x.ExpandBackquote((BackquoteNode)y, z, t) },
                     { typeof(SpliceNode), (x, y, z, t) => x.ExpandSplice((SpliceNode)y, z) },
                     { typeof(UnquoteNode), (x, y, z, t) => x.ExpandUnquote((UnquoteNode)y, z, t) },
                     { typeof(ListNode), (x, y, z, t) => x.ExpandListNode((ListNode)y, z, t) },
                     { typeof(QuoteNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
-                    { typeof(IntegerNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
-                    { typeof(StringNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
-                    { typeof(DecimalNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
-                    { typeof(ObjectNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
-                    { typeof(BooleanNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
+                    { typeof(int), (x, y, z, t) => x.ExpandToQuoted(y, z) },
+                    { typeof(string), (x, y, z, t) => x.ExpandToQuoted(y, z) },
+                    { typeof(decimal), (x, y, z, t) => x.ExpandToQuoted(y, z) },
+                    { typeof(object), (x, y, z, t) => x.ExpandToQuoted(y, z) },
+                    { typeof(bool), (x, y, z, t) => x.ExpandToQuoted(y, z) },
                     { typeof(SymbolNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
                 };
 
@@ -30,17 +30,17 @@ namespace Yalla.Evaluator
             this.evaluator = evaluator;
         }
 
-        public AstNode Expand(AstNode node, int backquoteDepth, Environment environment)
+        public object Expand(object node, int backquoteDepth, Environment environment)
         {
             return expandFunctions[node.GetType()].Invoke(this, node, backquoteDepth, environment);
         }
 
-        public AstNode ExpandToQuoted(AstNode node, int backquoteDepth)
+        public object ExpandToQuoted(object node, int backquoteDepth)
         {
             return node;
         }
 
-        public AstNode ExpandListNode(ListNode node, int backquoteDepth, Environment environment)
+        public object ExpandListNode(ListNode node, int backquoteDepth, Environment environment)
         {
             var result = new ListNode();
 
@@ -73,17 +73,17 @@ namespace Yalla.Evaluator
             return result;
         }
 
-        public AstNode ExpandSplice(SpliceNode node, int backquoteDepth)
+        public object ExpandSplice(SpliceNode node, int backquoteDepth)
         {
             throw new ArgumentException("Cannot splice outside of list!");
         }
 
-        public AstNode ExpandBackquote(BackquoteNode node, int backquoteDepth, Environment environment)
+        public object ExpandBackquote(BackquoteNode node, int backquoteDepth, Environment environment)
         {
             return new QuoteNode(Expand(node.InnerValue, backquoteDepth + 1, environment));
         }
 
-        public AstNode ExpandUnquote(UnquoteNode node, int backquoteDepth, Environment environment)
+        public object ExpandUnquote(UnquoteNode node, int backquoteDepth, Environment environment)
         {
             if (backquoteDepth < 1)
             {

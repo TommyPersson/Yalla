@@ -12,10 +12,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         {
             const string Program = "(if true 1 2)";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Value);
+            Assert.AreEqual(1, result);
         }
 
         [Test]
@@ -23,10 +22,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         {
             const string Program = "(if false 1 2)";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Value);
+            Assert.AreEqual(2, result);
         }
 
         [Test]
@@ -34,10 +32,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         {
             const string Program = "(if true 1)";
             
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Value);
+            Assert.AreEqual(1, result);
         }
 
         [Test]
@@ -55,10 +52,9 @@ namespace Tests.Evaluator.PrimitiveFunctions
         {
             const string Program = "(if \"asd\" 1)";
 
-            var result = Evaluator.Evaluate(Program) as IntegerNode;
+            var result = (int)Evaluator.Evaluate(Program);
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(1, result.Value);
+            Assert.AreEqual(1, result);
         }
     }
 }

@@ -10,10 +10,10 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToCompareValues()
         {
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(= true true)")).Value);
-            Assert.IsFalse(((BooleanNode)Evaluator.Evaluate("(= true false)")).Value);
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(= \"string\" \"string\")")).Value);
-            Assert.IsTrue(((BooleanNode)Evaluator.Evaluate("(= (+ 1 2) 3)")).Value);
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(= true true)")));
+            Assert.IsFalse(((bool)Evaluator.Evaluate("(= true false)")));
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(= \"string\" \"string\")")));
+            Assert.IsTrue(((bool)Evaluator.Evaluate("(= (+ 1 2) 3)")));
         }
     }
 }

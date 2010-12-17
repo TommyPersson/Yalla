@@ -1,5 +1,8 @@
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Yalla;
 using Yalla.Evaluator;
 using Yalla.Parser;
@@ -14,9 +17,9 @@ namespace YallaMonoRepl
         {
             var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), Console.Out, Console.In);
             var prettyPrinter = new PrettyPrinter();
-       		Console.Out.WriteLine(System.Environment.Version);
-            Console.Out.WriteLine("End you statements with <Enter>. (only single line statements allowed)");
-
+   
+			Console.Out.WriteLine("End you statements with <Enter>. (only single line statements allowed)");
+			
             while (true)
             {
                 Console.Out.WriteLine();

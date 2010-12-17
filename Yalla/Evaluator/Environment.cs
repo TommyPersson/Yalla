@@ -5,16 +5,16 @@ using Yalla.Parser.AstObjects;
 
 namespace Yalla.Evaluator
 {
-    public class Environment : IEnumerable<KeyValuePair<SymbolNode, AstNode>>
+    public class Environment : IEnumerable<KeyValuePair<SymbolNode, object>>
     {
-        private readonly Dictionary<SymbolNode, AstNode> table = new Dictionary<SymbolNode, AstNode>();
+        private readonly Dictionary<SymbolNode, object> table = new Dictionary<SymbolNode, object>();
 
         public Environment()
         {
-            table = new Dictionary<SymbolNode, AstNode>();
+            table = new Dictionary<SymbolNode, object>();
         }
 
-        public Environment(Dictionary<SymbolNode, AstNode> table)
+        public Environment(Dictionary<SymbolNode, object> table)
         {
             this.table = table;
         }
@@ -22,12 +22,12 @@ namespace Yalla.Evaluator
         public Environment(Environment env)
         {
             Parent = env.Parent;
-            table = new Dictionary<SymbolNode, AstNode>(env.table);
+            table = new Dictionary<SymbolNode, object>(env.table);
         }
         
         public Environment Parent { get; set; }
 
-        public bool DefineSymbol(SymbolNode symbol, AstNode value)
+        public bool DefineSymbol(SymbolNode symbol, object value)
         {
             bool shadowing = CanLookUpSymbol(symbol);
 
@@ -36,7 +36,7 @@ namespace Yalla.Evaluator
             return shadowing;
         }
 
-        public bool SetSymbolValue(SymbolNode symbol, AstNode value)
+        public bool SetSymbolValue(SymbolNode symbol, object value)
         {
             if (table.ContainsKey(symbol))
             {
@@ -52,7 +52,7 @@ namespace Yalla.Evaluator
             return false;
         }
 
-        public AstNode LookUpSymbol(SymbolNode symbolNode)
+        public object LookUpSymbol(SymbolNode symbolNode)
         {
             if (table.ContainsKey(symbolNode))
             {
@@ -89,7 +89,7 @@ namespace Yalla.Evaluator
             return child;
         }
 
-        public IEnumerator<KeyValuePair<SymbolNode, AstNode>> GetEnumerator()
+        public IEnumerator<KeyValuePair<SymbolNode, object>> GetEnumerator()
         {
             return table.GetEnumerator();
         }
