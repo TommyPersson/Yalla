@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 
 using Yalla;
@@ -91,12 +92,23 @@ namespace SwankServer
 							
 							var match = regex.Match(sbuf);
 							
-							var msg = match.Groups[1].Value;
+							var msg = Regex.Unescape(match.Groups[1].Value);
 							
-							var result = evaluator.Evaluate(msg);
-							var returnString = prettyPrinter.PrettyPrint(result);
-							
-							SwankWriteResult(returnString);							
+							try
+							{
+							    var result = evaluator.Evaluate(msg);
+								var returnString = prettyPrinter.PrettyPrint(result);
+								
+								var r = returnString.Replace("\"", "\\\"");
+								
+								SwankWriteResult(r);									
+							}
+							catch (Exception e)
+							{
+								SwankWrite(e.Message);
+							}
+								
+													
 							SwankReturn();
 						}
 					}
@@ -132,7 +144,7 @@ namespace SwankServer
 		{
 			var message2 = CreateMessage("(:return (:ok " + val + ") " + messageCounter + ")");
 			
-			writer.Write(message2);
+            writer.Write(message2);
 			writer.Flush();			
 		}
 		
