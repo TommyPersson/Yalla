@@ -9,33 +9,40 @@ namespace Yalla.Parser.AstObjects
         public static readonly IDictionary<string, FunctionNode> PrimitiveFunctions =
             new Dictionary<string, FunctionNode>
                 {
-                    { "+", new AddFunctionNode() },
-                    { "=", new EqualFunctionNode() },
-                    { "and", new AndFunctionNode() },
-                    { "or", new OrFunctionNode() },
-                    { "cons", new ConsFunctionNode() },
-                    { "lambda", new LambdaFunctionNode() },
-                    { "def", new DefineFunctionNode() },
-                    { "defmacro", new DefmacroFunctionNode() },
-                    { "set!", new SetFunctionNode() },
-                    { "if", new IfFunctionNode() },
-                    { "let", new LetFunctionNode() },
-                    { "map", new MapFunctionNode() },
+                    { "+", new PrimitiveFunction("+") },
+                    { "=", new PrimitiveFunction("=") },
+                    { "and", new PrimitiveFunction("and") },
+                    { "or", new PrimitiveFunction("or") },
+                    { "cons", new PrimitiveFunction("cons") },
+                    { "lambda", new PrimitiveFunction("lambda") },
+                    { "def", new PrimitiveFunction("def") },
+                    { "defmacro", new PrimitiveFunction("defmacro") },
+                    { "set!", new PrimitiveFunction("set!") },
+                    { "if", new PrimitiveFunction("if") },
+                    { "let", new PrimitiveFunction("let") },
+                    { "map", new PrimitiveFunction("map") },
                 };
+        
 
-        public string Symbol { get; protected set; }
-
-        public static FunctionNode MakeFunctionNode(string name)
+        public FunctionNode()
         {
-            if (PrimitiveFunctions.ContainsKey(name))
-            {
-                return PrimitiveFunctions[name];
-            }
-            
-            return null;
         }
+        
+        public FunctionNode(string symbol)
+        {
+            Symbol = symbol;
+        }
+        
+        public string Symbol { get; protected set; }
     }
 
+    public class PrimitiveFunction : FunctionNode
+    {
+        public PrimitiveFunction(string symbol) : base(symbol)
+        {
+        }
+    }
+    
     public class NativeMethodFunctionNode : FunctionNode
     {
         public NativeMethodFunctionNode(string name)
@@ -69,73 +76,14 @@ namespace Yalla.Parser.AstObjects
         public string MethodName { get; private set; }
     }
 
-    public class AddFunctionNode : FunctionNode
-    {
-        public AddFunctionNode()
-        {
-            Symbol = "+";
-        }
-    }
-
-    public class AndFunctionNode : FunctionNode
-    {
-        public AndFunctionNode()
-        {
-            Symbol = "and";
-        }
-    }
-
-    public class OrFunctionNode : FunctionNode
-    {
-        public OrFunctionNode()
-        {
-            Symbol = "or";
-        }
-    }
-
-    public class NotFunctionNode : FunctionNode
-    {
-        public NotFunctionNode()
-        {
-            Symbol = "not";
-        }
-    }
-
-    public class EqualFunctionNode : FunctionNode
-    {
-        public EqualFunctionNode()
-        {
-            Symbol = "=";
-        }
-    }
-
-    public class ConsFunctionNode : FunctionNode
-    {
-        public ConsFunctionNode()
-        {
-            Symbol = "cons";
-        }
-    }
-
-    public class DefineFunctionNode : FunctionNode
-    {
-        public DefineFunctionNode()
-        {
-            Symbol = "def";
-        }
-    }
-
-    public class LambdaFunctionNode : FunctionNode
-    {
-        public LambdaFunctionNode()
-        {
-            Symbol = "lambda";
-        }
-    }
 
     public class ProcedureNode : FunctionNode
     {
-        public ProcedureNode(IEnumerable<SymbolNode> parameters, IEnumerable<object> body, Environment environment, bool isMacro = false)
+        public ProcedureNode(
+            IEnumerable<SymbolNode> parameters, 
+            IEnumerable<object> body, 
+            Environment environment, 
+            bool isMacro = false)
         {
             Parameters = parameters;
             Body = body;
@@ -150,45 +98,5 @@ namespace Yalla.Parser.AstObjects
         public Environment Environment { get; private set; }
 
         public bool IsMacro { get; private set; }
-    }
-    
-    public class DefmacroFunctionNode : FunctionNode
-    {
-        public DefmacroFunctionNode()
-        {
-            Symbol = "defmacro";
-        }
-    }
-
-    public class SetFunctionNode : FunctionNode
-    {
-        public SetFunctionNode()
-        {
-            Symbol = "set!";
-        }
-    }
-    
-    public class IfFunctionNode : FunctionNode
-    {
-        public IfFunctionNode()
-        {
-            Symbol = "if";
-        }
-    }
-
-    public class LetFunctionNode : FunctionNode
-    {
-        public LetFunctionNode()
-        {
-            Symbol = "let";
-        }
-    }
-
-    public class MapFunctionNode : FunctionNode
-    {
-        public MapFunctionNode()
-        {
-            Symbol = "map";
-        }
     }
 }
