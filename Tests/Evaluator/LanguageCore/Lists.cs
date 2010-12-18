@@ -55,5 +55,21 @@ namespace Tests.Evaluator.Language
             Assert.AreEqual(false, result1);
             Assert.AreEqual(true, result2);
         }
+        
+        [Test]
+        public void AssociationLists()
+        {
+            const string Program1 = "(assoc 's1 '(s1 r1 s2 r2))";
+            const string Program2 = "(assoc 's2 '(s1 r1 s2 r2))";
+            const string Program3 = "(assoc 's3 '(s1 r1 s2 r2))";
+            
+            var result1 = (SymbolNode)Evaluator.Evaluate(Program1);
+            var result2 = (SymbolNode)Evaluator.Evaluate(Program2);
+            var result3 = (NilNode)Evaluator.Evaluate(Program3);
+
+            Assert.AreEqual(new SymbolNode("r1"), result1);
+            Assert.AreEqual(new SymbolNode("r2"), result2);
+            Assert.IsNotNull(result3);
+        }
     }
 }

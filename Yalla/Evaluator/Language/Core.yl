@@ -9,6 +9,10 @@
 (defun eval (form) (.Evaluate *evaluator* form))
 (defun apply (fun args) (.Apply *applier* fun args))
 
+;;; Logic
+
+(defun not (form) (if form false true))
+
 ;;; Control flow
 
 (defmacro do (& body)
@@ -19,6 +23,8 @@
 
 (defmacro unless (predicate & body)
   `(if ~predicate nil (do ~@body))) 
+
+
 
 ;;; IO   
          
@@ -60,3 +66,15 @@
      (do ~@body)
      (unless (empty? (rest list123))
        (dolist (~(first binding) (rest list123)) ~@body))))
+
+;;; (assoc 'a '(a b)) => b
+;;; (assoc 'c '(a b)) => nil
+;;; (assoc 'c '(a b c)) => error
+
+(defun assoc (sym lst)
+  (when (not (empty? lst))
+    (let ((match (first lst))
+          (res (second lst)))
+      (if (= sym match)
+          res
+          (assoc sym (rest (rest lst)))))))
