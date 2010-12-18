@@ -7,7 +7,7 @@
 
 (defun read (str) (.ParseForm *parser* str))
 (defun eval (form) (.Evaluate *evaluator* form))
-(defun apply (fun & args) (.Apply *applier* fun args))
+(defun apply (fun args) (.Apply *applier* fun args))
 
 ;;; Control flow
 

@@ -39,7 +39,7 @@ Global
 		{B7174DBA-1627-4A5A-9E3A-1E57639B6F22}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = YallaMonoRepl\YallaMonoRepl.csproj
+		StartupItem = SwankServer\SwankServer.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

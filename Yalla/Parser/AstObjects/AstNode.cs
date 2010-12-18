@@ -16,12 +16,7 @@ namespace Yalla.Parser.AstObjects
             {
                 return new NilNode();
             }
-
-            if (o is AstNode)
-            {
-                return o as AstNode;
-            }
-
+			
             return o;
         }
     }

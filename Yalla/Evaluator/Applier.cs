@@ -52,7 +52,9 @@ namespace Yalla.Evaluator
         {
             var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment));
 
-            if (!args.All(x => x.GetType() == typeof(int) || x.GetType() == typeof(decimal)))
+			bool returnInteger = args.All(x => x.GetType() == typeof(int));
+			
+            if (!returnInteger && !args.All(x => x.GetType() == typeof(int) || x.GetType() == typeof(decimal)))
             {
                 throw new ArgumentException("'+' may only take integer or double values!");
             }
@@ -72,7 +74,7 @@ namespace Yalla.Evaluator
                 }
             }
 
-			if ((result % 1) == 0)
+			if (returnInteger)
 			{
 				return (int)Convert.ToInt32(result);
 			}
@@ -171,11 +173,7 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("No argument passed to native method call!");
             }
 
-            var obj = evaluator.Evaluate(arguments.Children().First(), environment); // as ObjectNode;
-            /*if (obj == null)
-            {
-                throw new ArgumentException("Argument to native method call not an object!");
-            }*/
+            var obj = evaluator.Evaluate(arguments.Children().First(), environment);
 
             var args = arguments.Children().Skip(1).Select(x => evaluator.Evaluate(x, environment)).ToList();
             var argTypes = args.Select(x => x.GetType()).ToList();

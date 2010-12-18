@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SwankServer</RootNamespace>
     <AssemblyName>SwankServer</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,4 +40,10 @@
     <Compile Include="SwankServer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Yalla\Yalla.csproj">
+      <Project>{793099D6-ED66-45AE-8CD2-8387CBB2CF59}</Project>
+      <Name>Yalla</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

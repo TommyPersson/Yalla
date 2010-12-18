@@ -41,15 +41,17 @@ namespace Yalla
 
         private void PrettyPrintSub(object node)
         {
-			if (nodeTypeDispatch.ContainsKey(node.GetType()))
+			if (node != null)
 			{
-            	nodeTypeDispatch[node.GetType()].Invoke(this, node);
+				if (nodeTypeDispatch.ContainsKey(node.GetType()))
+				{
+	            	nodeTypeDispatch[node.GetType()].Invoke(this, node);
+				}
+				else
+				{
+					stringWriter.Write("<" + node.GetType() + ": " + node + ">");
+				}
 			}
-			else
-			{
-				stringWriter.Write("<" + node.GetType() + ": " + node + ">");
-			}
-			
         }
 
         private void PrettyPrintSub(decimal node)

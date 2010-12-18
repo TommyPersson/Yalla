@@ -5,6 +5,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
+using Yalla;
+using Yalla.Evaluator;
+using Yalla.Parser;
+using Yalla.Tokenizer;
+using Environment = Yalla.Evaluator.Environment;
+
 namespace SwankServer
 {
 	public class SwankServer
@@ -29,6 +35,9 @@ namespace SwankServer
 		
 		public void Run()
 		{			
+			var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), null, null);
+            var prettyPrinter = new PrettyPrinter();
+			
 			// wireshark filter: tcp.port eq 4005 and data
 						
 			try
@@ -71,6 +80,10 @@ namespace SwankServer
 							writer.Write(message);
 							writer.Flush();
 						}
+						else if (sbuf.Contains("swank:operator-arglist"))
+						{			
+							SwankReturn();
+						}
 						else
 						{
 							// cannot handle multiline forms like (tommy \n aadss)
@@ -80,7 +93,10 @@ namespace SwankServer
 							
 							var msg = match.Groups[1].Value;
 							
-							SwankWriteResult(msg);							
+							var result = evaluator.Evaluate(msg);
+							var returnString = prettyPrinter.PrettyPrint(result);
+							
+							SwankWriteResult(returnString);							
 							SwankReturn();
 						}
 					}
