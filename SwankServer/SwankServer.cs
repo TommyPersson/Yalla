@@ -19,7 +19,9 @@ namespace SwankServer
 		private StreamReader reader;
 		private StreamWriter writer;
 		private int messageCounter;
-		
+        private StringBuilder stdOutSink;
+		private ObservableStringWriter stdOut;
+        
 		public SwankServer()
 		{
 			TcpListener listener = new TcpListener(new IPAddress(new byte[] { 127, 0, 0, 1 }), 4005);
@@ -32,14 +34,18 @@ namespace SwankServer
 			reader = new StreamReader(stream);
 			
 			writer = new StreamWriter(stream);
+            
+            stdOutSink = new StringBuilder();
+            stdOut = new ObservableStringWriter(stdOutSink);
+            stdOut.Flushed += OnStdOutFlushed;
 		}
 		
 		public void Run()
 		{			
-			var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), null, null);
+			var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), stdOut, null);
             var prettyPrinter = new PrettyPrinter();
 			
-			// wireshark filter: tcp.port eq 4005 and data
+            // wireshark filter: tcp.port eq 4005 and data
 						
 			try
 			{
@@ -99,7 +105,9 @@ namespace SwankServer
                                 
 							    var result = evaluator.Evaluate(msg);
 								var returnString = prettyPrinter.EscapeString(prettyPrinter.PrettyPrint(result));
-																
+								
+                                stdOut.Flush();
+                                
 								SwankWriteResult(returnString);									
 							}
 							catch (Exception e)
@@ -146,6 +154,14 @@ namespace SwankServer
             writer.Write(message2);
 			writer.Flush();			
 		}
+        
+        private void OnStdOutFlushed(object sender, EventArgs args)
+        {
+            var s = stdOutSink.ToString();
+            stdOutSink.Clear();
+            
+            SwankWrite(s);
+        }
 		
 		private static string CreateMessage(string message)
 		{
