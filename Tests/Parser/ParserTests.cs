@@ -49,12 +49,17 @@ namespace Tests.Parser
         [Test]
         public void ShallParseString()
         {
-            var result = Parser.Parse("\"Hello World!\"");
+            var result = (string)Parser.Parse("\"Hello World!\"").First();
 
-            var stringNode = result.First() as string;
-
-            Assert.IsNotNull(stringNode);
-            Assert.AreEqual("Hello World!", stringNode);
+            Assert.AreEqual("Hello World!", result);
+            
+            var s = "\"\\\"Hej\\\"\"";
+            
+            System.Console.Out.WriteLine(s);
+            
+            var result2 = (string)Parser.Parse(s).First();
+            
+            Assert.AreEqual("\"Hej\"", result2);
         }
 
         [Test]

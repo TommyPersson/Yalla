@@ -123,7 +123,38 @@ namespace Yalla.Tokenizer
 
             while (lookAhead[0].HasValue && !finished)
             {
-                if (lookAhead[0] == '"')
+                if (lookAhead[0] == '\\')
+                {                        
+                    Consume();
+                    
+                    char ch = lookAhead[0].Value;
+                    
+                    switch(lookAhead[0])    
+                    {
+                        case 't':
+                            ch = '\t';
+                            break;
+                        case 'r':
+                            ch = '\r';
+                            break;
+                        case 'n':
+                            ch = '\n';
+                            break;
+                        case '\\':
+                            break;
+                        case '"':
+                            break;
+                        case 'b':
+                            ch = '\b';
+                            break;
+                        case 'f':
+                            ch = '\f';
+                            break;
+                    }
+                    
+                    tokenBuffer.Append(ch);
+                } 
+                else if (lookAhead[0] == '"')
                 {
                     if (!begun)
                     {

@@ -90,18 +90,17 @@ namespace SwankServer
 							// cannot handle multiline forms like (tommy \n aadss)
 							var regex = new Regex("\\(swank:listener-eval \\\"(.*\n*?)\\\"\\) \"(.*)\" :repl-thread");
 							
-							var match = regex.Match(sbuf);
-							
-							var msg = Regex.Unescape(match.Groups[1].Value);
+							var match = regex.Match(sbuf);							
+							var msg = match.Groups[1].Value;
 							
 							try
-							{
+							{                                
+                                msg = Regex.Unescape(msg);
+                                
 							    var result = evaluator.Evaluate(msg);
-								var returnString = prettyPrinter.PrettyPrint(result);
-								
-								var r = returnString.Replace("\"", "\\\"");
-								
-								SwankWriteResult(r);									
+								var returnString = prettyPrinter.EscapeString(prettyPrinter.PrettyPrint(result));
+																
+								SwankWriteResult(returnString);									
 							}
 							catch (Exception e)
 							{

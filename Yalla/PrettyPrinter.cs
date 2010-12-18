@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Yalla.Parser.AstObjects;
 
 namespace Yalla
@@ -39,6 +41,42 @@ namespace Yalla
             return stringWriter.ToString();
         }
 
+        public string EscapeString(string s)
+        {
+            StringBuilder sb = new StringBuilder();   
+    
+            string escaped;
+            
+            foreach (var ch in s)
+            {
+                switch (ch)
+                {
+                case '\\':
+                    escaped = "\\\\";
+                    break;
+                case '"':
+                    escaped = "\\\"";
+                    break;
+                case '\t':
+                    escaped = "\\t";
+                    break;
+                case '\r':
+                    escaped = "\\r";
+                    break;
+                case '\n':
+                    escaped = "\\n";
+                    break;
+                default:
+                    escaped = ch.ToString();
+                    break;
+                }
+                
+                sb.Append(escaped);
+            }
+            
+            return sb.ToString();
+        }
+        
         private void PrettyPrintSub(object node)
         {
 			if (node != null)
@@ -88,9 +126,9 @@ namespace Yalla
             PrettyPrint(node.InnerValue);
         }
 
-        private void PrettyPrintSub(string node)
+        private void PrettyPrintSub(string str)
         {
-            stringWriter.Write("\"" + node + "\"");
+            stringWriter.Write("\"" + EscapeString(str) + "\"");
         }
 
         private void PrettyPrintSub(SymbolNode node)
