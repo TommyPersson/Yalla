@@ -27,10 +27,14 @@ namespace SwankServer
 			TcpListener listener = new TcpListener(new IPAddress(new byte[] { 127, 0, 0, 1 }), 4005);
 			listener.Start(10);
 			
+            Console.Out.WriteLine("Listening on 127.0.0.1:4005");
+            
 			var socket = listener.AcceptSocket();
 			
 			var stream = new NetworkStream(socket);
 			
+            Console.Out.WriteLine("Client connected!");
+            
 			reader = new StreamReader(stream);
 			
 			writer = new StreamWriter(stream);
@@ -45,6 +49,10 @@ namespace SwankServer
 			var evaluator = new Evaluator(new Parser(new Tokenizer()), new Environment(), stdOut, null);
             var prettyPrinter = new PrettyPrinter();
 			
+            evaluator.Evaluate("(defun parse-swank-listener-eval (msg)" +
+                               "  (let ((form-str (assoc 'swank:listener-eval (assoc ':emacs-rex msg))))" +
+                               "    (eval form-str)))");
+            
             // wireshark filter: tcp.port eq 4005 and data
 						
 			try
@@ -79,6 +87,8 @@ namespace SwankServer
 							                                          ":version \"20xx\")) 1)");
 							writer.Write(message);
 							writer.Flush();
+                            
+                            Console.Out.WriteLine("Connection info sent!");
 						}
 						else if (sbuf.Contains("swank:create-repl"))
 						{
@@ -86,24 +96,19 @@ namespace SwankServer
 							
 							writer.Write(message);
 							writer.Flush();
+                            
+                            Console.Out.WriteLine("Creating REPL!");
 						}
 						else if (sbuf.Contains("swank:operator-arglist"))
 						{			
 							SwankReturn();
 						}
-						else
+						else if (sbuf.Contains("swank:listener-eval"))
 						{
-							// cannot handle multiline forms like (tommy \n aadss)
-							var regex = new Regex("\\(swank:listener-eval \\\"(.*\n*?)\\\"\\) \"(.*)\" :repl-thread");
-							
-							var match = regex.Match(sbuf);							
-							var msg = match.Groups[1].Value;
-							
 							try
 							{                                
-                                msg = Regex.Unescape(msg);
-                                
-							    var result = evaluator.Evaluate(msg);
+                                var evalStr = "(parse-swank-listener-eval '" + sbuf + ")";
+                                var result = evaluator.Evaluate(evalStr);
 								var returnString = prettyPrinter.EscapeString(prettyPrinter.PrettyPrint(result));
 								
                                 stdOut.Flush();
@@ -115,7 +120,6 @@ namespace SwankServer
 								SwankWrite(e.Message);
 							}
 								
-													
 							SwankReturn();
 						}
 					}
