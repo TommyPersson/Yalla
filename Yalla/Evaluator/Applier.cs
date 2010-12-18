@@ -24,6 +24,7 @@ namespace Yalla.Evaluator
                     { typeof(SetFunctionNode), (x, y, z, v) => x.Apply((SetFunctionNode)y, z, v) },
                     { typeof(IfFunctionNode), (x, y, z, v) => x.Apply((IfFunctionNode)y, z, v) },
                     { typeof(LetFunctionNode), (x, y, z, v) => x.Apply((LetFunctionNode)y, z, v) },
+                    { typeof(MapFunctionNode), (x, y, z, v) => x.Apply((MapFunctionNode)y, z, v) },
                     { typeof(NativeMethodFunctionNode), (x, y, z, v) => x.Apply((NativeMethodFunctionNode)y, z, v) },
                     { typeof(NativeConstructorFunctionNode), (x, y, z, v) => x.Apply((NativeConstructorFunctionNode)y, z, v) },
                     { typeof(NativeStaticMethodFunctionNode), (x, y, z, v) => x.Apply((NativeStaticMethodFunctionNode)y, z, v) },
@@ -449,6 +450,36 @@ namespace Yalla.Evaluator
             }
 
             return evaluator.Evaluate(bodyforms, localEnv);
+        }
+                
+        public object Apply(MapFunctionNode function, ListNode arguments, Environment environment)
+        {
+            /*
+             * (map (lambda (x) (+ x 1)) '(1 2 3)) => (2 3 4)
+             */
+            
+            var func = evaluator.Evaluate(arguments.First(), environment) as FunctionNode;
+            var list = evaluator.Evaluate(arguments.Rest().First(), environment) as ListNode;
+
+            if (func != null)
+            {            
+                if (list != null)
+                {
+                    ListNode result = new ListNode(list.Children().Select(x => Apply(func, 
+                                                                                      new ListNode(new List<object> { x }), 
+                                                                                      environment)).ToList());
+
+                    return result;
+                }
+                else 
+                {
+                    throw new ArgumentException("Second argument to map not a list!");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("First argument to map not a function!");
+            }                            
         }
     }
 }

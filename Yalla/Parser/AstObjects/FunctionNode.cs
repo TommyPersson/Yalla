@@ -20,6 +20,7 @@ namespace Yalla.Parser.AstObjects
                     { "set!", new SetFunctionNode() },
                     { "if", new IfFunctionNode() },
                     { "let", new LetFunctionNode() },
+                    { "map", new MapFunctionNode() },
                 };
 
         public string Symbol { get; protected set; }
@@ -180,6 +181,14 @@ namespace Yalla.Parser.AstObjects
         public LetFunctionNode()
         {
             Symbol = "let";
+        }
+    }
+
+    public class MapFunctionNode : FunctionNode
+    {
+        public MapFunctionNode()
+        {
+            Symbol = "map";
         }
     }
 }

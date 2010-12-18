@@ -72,6 +72,7 @@
     <Compile Include="Evaluator\Core.cs" />
     <Compile Include="Parser\ParserTests.cs" />
     <Compile Include="Tokenizer\TokenizerTests.cs" />
+    <Compile Include="Evaluator\PrimitiveFunctions\Map.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Yalla\Yalla.csproj">
