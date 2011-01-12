@@ -33,7 +33,7 @@ namespace SwankServer
 			
 			var stream = new NetworkStream(socket);
 			
-            Console.Out.WriteLine("Client connected!");
+            Console.Out.WriteLine("Client connected from " + ((IPEndPoint)socket.RemoteEndPoint).Address);
             
 			reader = new StreamReader(stream);
 			
