@@ -44,5 +44,18 @@ namespace Tests.Evaluator.PrimitiveFunctions
 
             Assert.AreEqual(3, result);
         }
+
+        [Test]
+        public void ShallBeAbleToSetPropertyValues()
+        {
+            const string Program = "(let ((host \"192.168.1.123\") " +
+                                   "      (urib (System.UriBuilder.)))" +
+                                   "  (set! .Host urib \"192.168.1.123\")" +
+                                   "  (= host (.Host urib)))";
+
+            var result = (bool)Evaluator.Evaluate(Program);
+
+            Assert.IsTrue(result);
+        }
     }
 }

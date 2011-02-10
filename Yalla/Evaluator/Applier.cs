@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +33,6 @@ namespace Yalla.Evaluator
                     { "if", (x, y, z) => x.ApplyIf(y, z) },
                     { "let", (x, y, z) => x.ApplyLet(y, z) },
                     { "map", (x, y, z) => x.ApplyMap(y, z) },
-            
                 };
 
         private readonly Evaluator evaluator;
@@ -44,15 +42,15 @@ namespace Yalla.Evaluator
             this.evaluator = evaluator;
         }
 
-		public object Apply(FunctionNode function, ListNode arguments)
-		{
-			return Apply(function, arguments, evaluator.GlobalEnvironment);
-		}
-		
+        public object Apply(FunctionNode function, ListNode arguments)
+        {
+            return Apply(function, arguments, evaluator.GlobalEnvironment);
+        }
+        
         public object Apply(FunctionNode function, ListNode arguments, Environment environment)
         {
-			var result = applyFunctions[function.GetType()].Invoke(this, function, arguments, environment);
-			
+            var result = applyFunctions[function.GetType()].Invoke(this, function, arguments, environment);
+            
             return result;
         }
 
@@ -192,29 +190,41 @@ namespace Yalla.Evaluator
 
             var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToArray();
             var argTypes = args.Select(x => x.GetType()).ToArray();
-
-            object res;
-
+            
             try
             {
-                var mi = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, null, argTypes, new ParameterModifier[0]);
+                var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, null, argTypes, new ParameterModifier[0]);
+                if (method != null)
+                {
+                    return AstNode.MakeNode(method.Invoke(null, args));
+                }
 
-                res = mi.Invoke(null, args);
+                var property = type.GetProperty(methodName, BindingFlags.Public | BindingFlags.Static);
+                if (property != null)
+                {
+                    return AstNode.MakeNode(property.GetValue(null, null));
+                }
+
+                var field = type.GetField(methodName, BindingFlags.Public | BindingFlags.Static);
+                if (field != null)
+                {
+                    return AstNode.MakeNode(field.GetValue(null));
+                }
+
+                throw new ArgumentException("Static method '" + typeName + "/" + methodName + "' with argument types '" + argTypes.Select(x => x.Name).Aggregate((s1, s2) => s1 + "', '" + s2) + "' not found!");
             }
             catch (Exception)
             {
                 throw new ArgumentException("Static method '" + typeName + "/" + methodName + "' with argument types '" + argTypes.Select(x => x.Name).Aggregate((s1, s2) => s1 + "', '" + s2) + "' not found!");
             }
-
-            return AstNode.MakeNode(res);
         }
         
         public object ApplyAdd(ListNode arguments, Environment environment)
         {
             var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment));
 
-			bool returnInteger = args.All(x => x.GetType() == typeof(int));
-			
+            bool returnInteger = args.All(x => x.GetType() == typeof(int));
+            
             if (!returnInteger && !args.All(x => x.GetType() == typeof(int) || x.GetType() == typeof(decimal)))
             {
                 throw new ArgumentException("'+' may only take integer or double values!");
@@ -235,31 +245,31 @@ namespace Yalla.Evaluator
                 }
             }
 
-			if (returnInteger)
-			{
-				return (int)Convert.ToInt32(result);
-			}
-			
-			return result;
+            if (returnInteger)
+            {
+                return (int)Convert.ToInt32(result);
+            }
+            
+            return result;
         }
 
         public object ApplyAnd(ListNode arguments, Environment environment)
         {
             foreach (var argument in arguments.Children())
             {
-				try
-				{					
-                    var result = (bool)evaluator.Evaluate(argument, environment);
-											
-	                if (!result)
-	                {
-	                    return false;
-	                }
-				}
-				catch (InvalidCastException)
-				{
+                try
+                {
+                    var result = (bool)evaluator.Evaluate(argument, environment);
+
+                    if (!result)
+                    {
+                        return false;
+                    }
+                }
+                catch (InvalidCastException)
+                {
                     throw new ArgumentException("Non-boolean value: " + argument);
-				}
+                }
             }
 
             return true;
@@ -269,27 +279,22 @@ namespace Yalla.Evaluator
         {
             foreach (var argument in arguments.Children())
             {
-				try
-				{					
+                try
+                {
                     var result = (bool)evaluator.Evaluate(argument, environment);
-								
-	                if (result)
-	                {
-	                    return true;
-	                }	
-				}
-				catch (InvalidCastException)
-				{
+
+                    if (result)
+                    {
+                        return true;
+                    }
+                }
+                catch (InvalidCastException)
+                {
                     throw new ArgumentException("Non-boolean value: " + argument);
-				}
+                }
             }
 
-            if (arguments.Children().Count != 0)
-            {
-                return false;
-            }
-
-            return true;
+            return arguments.Children().Count == 0;
         }
 
         public object ApplyEquals(ListNode arguments, Environment environment)
@@ -327,7 +332,6 @@ namespace Yalla.Evaluator
             return ((ListNode)AstNode.MakeNode(new List<object> { args.ElementAt(0) })).Append(list);
         }
 
-        
         public object ApplyLambda(ListNode arguments, Environment environment)
         {
             var parameterList = arguments.First() as ListNode;
@@ -399,15 +403,42 @@ namespace Yalla.Evaluator
 
         public object ApplySet(ListNode arguments, Environment environment)
         {
-            if (arguments.Children().Count != 2)
+            /*if (arguments.Children().Count != 2)
             {
                 throw new ArgumentException("Wrong number of arguments given to set!! Expected: " + 2);
-            }
+            }*/
 
             var symbol = arguments.Children().ElementAt(0) as SymbolNode;
             if (symbol == null)
             {
                 throw new ArgumentException("First argument to set! not a symbol!");
+            }
+
+            // (set! .Name cs-obj "Hello")
+            if (symbol.Name.First() == '.')
+            {
+                var propName = symbol.Name.Substring(1);
+
+                var propValue = evaluator.Evaluate(arguments.Children().ElementAt(2), environment);
+                var target = evaluator.Evaluate(arguments.Children().ElementAt(1), environment);
+
+                var otype = target.GetType();
+                
+                var oproperty = otype.GetProperty(propName);
+                if (oproperty != null)
+                {
+                    oproperty.SetValue(target, propValue, null);
+                    return AstNode.MakeNode(propValue);
+                }
+
+                var ofield = otype.GetField(propName);
+                if (ofield != null)
+                {
+                    ofield.SetValue(target, propValue);
+                    return AstNode.MakeNode(propValue);
+                }
+
+                throw new ArgumentException(propName + " is not a valid property or field of " + otype);
             }
 
             var value = evaluator.Evaluate(arguments.Children().ElementAt(1), environment);
@@ -448,7 +479,7 @@ namespace Yalla.Evaluator
             /*
              * (let ((var-a form-a) (var-b form-b)) (+ var-a var-b))
              */
-            
+
             var bindingList = (ListNode) arguments.First();
             var bodyforms = arguments.Rest().Children().AsEnumerable();
 
@@ -477,24 +508,19 @@ namespace Yalla.Evaluator
             var list = evaluator.Evaluate(arguments.Rest().First(), environment) as ListNode;
 
             if (func != null)
-            {            
+            {
                 if (list != null)
                 {
-                    ListNode result = new ListNode(list.Children().Select(x => Apply(func, 
-                                                                                      new ListNode(new List<object> { x }), 
-                                                                                      environment)).ToList());
+                    ListNode result = new ListNode(list.Children().Select(
+                        x => Apply(func, new ListNode(new List<object> { x }), environment)).ToList());
 
                     return result;
                 }
-                else 
-                {
-                    throw new ArgumentException("Second argument to map not a list!");
-                }
+                
+                throw new ArgumentException("Second argument to map not a list!");
             }
-            else
-            {
-                throw new ArgumentException("First argument to map not a function!");
-            }                            
+            
+            throw new ArgumentException("First argument to map not a function!");
         }
     }
 }
