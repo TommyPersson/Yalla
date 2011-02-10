@@ -8,8 +8,8 @@ namespace Yalla.Evaluator
 {
     public class Applier
     {
-        private readonly IDictionary<Type, Func<Applier, FunctionNode, ListNode, Environment, object>> applyFunctions =
-            new Dictionary<Type, Func<Applier, FunctionNode, ListNode, Environment, object>>
+        private readonly IDictionary<Type, Func<Applier, FunctionNode, IList<object>, Environment, object>> applyFunctions =
+            new Dictionary<Type, Func<Applier, FunctionNode, IList<object>, Environment, object>>
                 {
                     { typeof(PrimitiveFunction), (x, y, z, v) => x.Apply((PrimitiveFunction)y, z, v) },
                     { typeof(ProcedureNode), (x, y, z, v) => x.Apply((ProcedureNode)y, z, v) },
@@ -18,8 +18,8 @@ namespace Yalla.Evaluator
                     { typeof(NativeStaticMethodFunctionNode), (x, y, z, v) => x.Apply((NativeStaticMethodFunctionNode)y, z, v) },
                 };
         
-        private readonly IDictionary<string, Func<Applier, ListNode, Environment, object>> primitiveFunctions =
-            new Dictionary<string, Func<Applier, ListNode, Environment, object>>
+        private readonly IDictionary<string, Func<Applier, IList<object>, Environment, object>> primitiveFunctions =
+            new Dictionary<string, Func<Applier, IList<object>, Environment, object>>
                 {
                     { "+", (x, y, z) => x.ApplyAdd(y, z) },
                     { "=", (x, y, z) => x.ApplyEquals(y, z) },
@@ -33,6 +33,7 @@ namespace Yalla.Evaluator
                     { "if", (x, y, z) => x.ApplyIf(y, z) },
                     { "let", (x, y, z) => x.ApplyLet(y, z) },
                     { "map", (x, y, z) => x.ApplyMap(y, z) },
+                    { "<", (x, y, z) => x.ApplyLessThan(y, z) },
                 };
 
         private readonly Evaluator evaluator;
@@ -42,28 +43,28 @@ namespace Yalla.Evaluator
             this.evaluator = evaluator;
         }
 
-        public object Apply(FunctionNode function, ListNode arguments)
+        public object Apply(FunctionNode function, IList<object> arguments)
         {
             return Apply(function, arguments, evaluator.GlobalEnvironment);
         }
         
-        public object Apply(FunctionNode function, ListNode arguments, Environment environment)
+        public object Apply(FunctionNode function, IList<object> arguments, Environment environment)
         {
             var result = applyFunctions[function.GetType()].Invoke(this, function, arguments, environment);
             
             return result;
         }
 
-        public object Apply(PrimitiveFunction function, ListNode arguments, Environment environment)
+        public object Apply(PrimitiveFunction function, IList<object> arguments, Environment environment)
         {
             var result = primitiveFunctions[function.Symbol].Invoke(this, arguments, environment);
             
             return result;
         }
                
-        public object Apply(ProcedureNode procedure, ListNode arguments, Environment environment)
+        public object Apply(ProcedureNode procedure, IList<object> arguments, Environment environment)
         {
-            if (arguments.Children().Count != procedure.Parameters.Count() && !procedure.Parameters.Select(x => x.Name).Contains("&"))
+            if (arguments.Count != procedure.Parameters.Count() && !procedure.Parameters.Select(x => x.Name).Contains("&"))
             {
                 throw new ArgumentException("Wrong number of arguments given to procedure! Expected: " + procedure.Parameters.Count());
             }
@@ -81,8 +82,8 @@ namespace Yalla.Evaluator
                     parameterSymbol = procedure.Parameters.ElementAt(i + 1);
 
                     evaluatedArgument =
-                        procedure.IsMacro ? new ListNode(arguments.Children().Skip(i).ToList())
-                        : new ListNode(arguments.Children().Skip(i).Select(arg => evaluator.Evaluate(arg, environment)).ToList());
+                        procedure.IsMacro ? arguments.Skip(i).ToList()
+                        : arguments.Skip(i).Select(arg => evaluator.Evaluate(arg, environment)).ToList();
 
                     localEnv.DefineSymbol(parameterSymbol, evaluatedArgument);
 
@@ -92,8 +93,8 @@ namespace Yalla.Evaluator
                 {
                     evaluatedArgument =
                         procedure.IsMacro
-                            ? arguments.Children().ElementAt(i)
-                            : evaluator.Evaluate(arguments.Children().ElementAt(i), environment);
+                            ? arguments.ElementAt(i)
+                            : evaluator.Evaluate(arguments.ElementAt(i), environment);
                 }
 
                 localEnv.DefineSymbol(parameterSymbol, evaluatedArgument);
@@ -114,16 +115,16 @@ namespace Yalla.Evaluator
             return res;
         }
         
-        public object Apply(NativeMethodFunctionNode method, ListNode arguments, Environment environment)
+        public object Apply(NativeMethodFunctionNode method, IList<object> arguments, Environment environment)
         {
-            if (arguments.Children().Count == 0)
+            if (arguments.Count == 0)
             {
                 throw new ArgumentException("No argument passed to native method call!");
             }
 
-            var obj = evaluator.Evaluate(arguments.Children().First(), environment);
+            var obj = evaluator.Evaluate(arguments.First(), environment);
 
-            var args = arguments.Children().Skip(1).Select(x => evaluator.Evaluate(x, environment)).ToList();
+            var args = arguments.Skip(1).Select(x => evaluator.Evaluate(x, environment)).ToList();
             var argTypes = args.Select(x => x.GetType()).ToList();
 
             Type otype = obj.GetType();
@@ -148,7 +149,7 @@ namespace Yalla.Evaluator
             throw new ArgumentException(method.Name + " is not a valid method, property or field on " + otype);
         }
         
-        public object Apply(NativeConstructorFunctionNode constructor, ListNode arguments, Environment environment)
+        public object Apply(NativeConstructorFunctionNode constructor, IList<object> arguments, Environment environment)
         {
             var typeName = constructor.TypeName;
 
@@ -159,7 +160,7 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("Type '" + typeName + "' not found!");
             }
 
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToArray();
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment)).ToArray();
             var argTypes = args.Select(x => x.GetType()).ToArray();
 
             object obj;
@@ -176,7 +177,7 @@ namespace Yalla.Evaluator
             return AstNode.MakeNode(obj);
         }
 
-        public object Apply(NativeStaticMethodFunctionNode staticMethod, ListNode arguments, Environment environment)
+        public object Apply(NativeStaticMethodFunctionNode staticMethod, IList<object> arguments, Environment environment)
         {
             var typeName = staticMethod.TypeName;
             var methodName = staticMethod.MethodName;
@@ -188,7 +189,7 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("Type '" + typeName + "' not found!");
             }
 
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToArray();
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment)).ToArray();
             var argTypes = args.Select(x => x.GetType()).ToArray();
             
             try
@@ -219,9 +220,9 @@ namespace Yalla.Evaluator
             }
         }
         
-        public object ApplyAdd(ListNode arguments, Environment environment)
+        public object ApplyAdd(IList<object> arguments, Environment environment)
         {
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment));
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment));
 
             bool returnInteger = args.All(x => x.GetType() == typeof(int));
             
@@ -253,9 +254,9 @@ namespace Yalla.Evaluator
             return result;
         }
 
-        public object ApplyAnd(ListNode arguments, Environment environment)
+        public object ApplyAnd(IList<object> arguments, Environment environment)
         {
-            foreach (var argument in arguments.Children())
+            foreach (var argument in arguments)
             {
                 try
                 {
@@ -275,9 +276,9 @@ namespace Yalla.Evaluator
             return true;
         }
 
-        public object ApplyOr(ListNode arguments, Environment environment)
+        public object ApplyOr(IList<object> arguments, Environment environment)
         {
-            foreach (var argument in arguments.Children())
+            foreach (var argument in arguments)
             {
                 try
                 {
@@ -294,12 +295,12 @@ namespace Yalla.Evaluator
                 }
             }
 
-            return arguments.Children().Count == 0;
+            return arguments.Count == 0;
         }
 
-        public object ApplyEquals(ListNode arguments, Environment environment)
+        public object ApplyEquals(IList<object> arguments, Environment environment)
         {
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment));
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment));
 
             var firstValue = args.First();
             var remainingValues = args.Skip(1);
@@ -313,58 +314,71 @@ namespace Yalla.Evaluator
 
             return AstNode.MakeNode(result);
         }
-
-        public object ApplyCons(ListNode arguments, Environment environment)
+        
+        public object ApplyLessThan(IList<object> arguments, Environment environment)
         {
-            var args = arguments.Children().Select(x => evaluator.Evaluate(x, environment)).ToList();
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment));
+            
+            var left = args.ElementAt(0);
+            var right = args.ElementAt(1);
+
+            return IsLessThan(left, right);
+        }
+
+        public object ApplyCons(IList<object> arguments, Environment environment)
+        {
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment)).ToList();
 
             if (args.Count != 2)
             {
                 throw new ArgumentException("Cons expects 2 arguments, got " + args.Count);
             }
 
-            var list = args.ElementAt(1) as ListNode;
+            var list = args.ElementAt(1) as IList<object>;
             if (list == null)
             {
                 throw new ArgumentException("Second argument to cons must be a list.");
             }
 
-            return ((ListNode)AstNode.MakeNode(new List<object> { args.ElementAt(0) })).Append(list);
+            var newList = new List<object> { args.ElementAt(0) };
+            newList.AddRange(list);
+
+            return newList;
         }
 
-        public object ApplyLambda(ListNode arguments, Environment environment)
+        public object ApplyLambda(IList<object> arguments, Environment environment)
         {
-            var parameterList = arguments.First() as ListNode;
-            var body = arguments.Rest();
+            var parameterList = arguments.First() as IList<object>;
+            var body = arguments.Skip(1);
 
             if (parameterList == null)
             {
                 throw new ArgumentException("Missing parameter list in lambda!");
             }
             
-            if (!parameterList.Children().All(x => x is SymbolNode))
+            if (!parameterList.All(x => x is SymbolNode))
             {
                 throw new ArgumentException("Parameters must be symbols!");
             }
 
-            return new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), body.Children(), environment.CreateChildEnvironment());
+            return new ProcedureNode(parameterList.Cast<SymbolNode>(), body, environment.CreateChildEnvironment());
         }
 
-        public object ApplyDef(ListNode arguments, Environment environment)
+        public object ApplyDef(IList<object> arguments, Environment environment)
         {
-            if (arguments.Children().Count != 2)
+            if (arguments.Count != 2)
             {
                 throw new ArgumentException("Wrong number of arguments given to def! Expected: " + 2);
             }
 
-            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+            var symbol = arguments.ElementAt(0) as SymbolNode;
 
             if (symbol == null)
             {
                 throw new ArgumentException("First argument to def not a symbol!");
             }
 
-            var valueForm = arguments.Children().ElementAt(1);
+            var valueForm = arguments.ElementAt(1);
 
             var result = evaluator.Evaluate(valueForm, environment);
 
@@ -373,42 +387,42 @@ namespace Yalla.Evaluator
             return symbol;
         }
 
-        public object ApplyDefMacro(ListNode arguments, Environment environment)
+        public object ApplyDefMacro(IList<object> arguments, Environment environment)
         {
-            if (arguments.Children().Count != 3)
+            if (arguments.Count != 3)
             {
                 throw new ArgumentException("Wrong number of arguments given to defmacro! Expected: " + 3);
             }
 
-            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+            var symbol = arguments.ElementAt(0) as SymbolNode;
             if (symbol == null)
             {
                 throw new ArgumentException("First argument to defmacro not a symbol!");
             }
 
-            var parameterList = arguments.Children().ElementAt(1) as ListNode;
+            var parameterList = arguments.ElementAt(1) as IList<object>;
             if (parameterList == null)
             {
                 throw new ArgumentException("Second argument to defmacro not a parameterlist!");
             }
 
-            var body = arguments.Children().ElementAt(2);
+            var body = arguments.ElementAt(2);
 
-            var macro = new ProcedureNode(parameterList.Children().Cast<SymbolNode>(), new[] { body }, environment.CreateChildEnvironment(), true);
+            var macro = new ProcedureNode(parameterList.Cast<SymbolNode>(), new[] { body }, environment.CreateChildEnvironment(), true);
             
             environment.DefineSymbol(symbol, macro);
 
             return symbol;
         }
 
-        public object ApplySet(ListNode arguments, Environment environment)
+        public object ApplySet(IList<object> arguments, Environment environment)
         {
-            /*if (arguments.Children().Count != 2)
+            /*if (arguments.Count != 2)
             {
                 throw new ArgumentException("Wrong number of arguments given to set!! Expected: " + 2);
             }*/
 
-            var symbol = arguments.Children().ElementAt(0) as SymbolNode;
+            var symbol = arguments.ElementAt(0) as SymbolNode;
             if (symbol == null)
             {
                 throw new ArgumentException("First argument to set! not a symbol!");
@@ -419,8 +433,8 @@ namespace Yalla.Evaluator
             {
                 var propName = symbol.Name.Substring(1);
 
-                var propValue = evaluator.Evaluate(arguments.Children().ElementAt(2), environment);
-                var target = evaluator.Evaluate(arguments.Children().ElementAt(1), environment);
+                var propValue = evaluator.Evaluate(arguments.ElementAt(2), environment);
+                var target = evaluator.Evaluate(arguments.ElementAt(1), environment);
 
                 var otype = target.GetType();
                 
@@ -441,7 +455,7 @@ namespace Yalla.Evaluator
                 throw new ArgumentException(propName + " is not a valid property or field of " + otype);
             }
 
-            var value = evaluator.Evaluate(arguments.Children().ElementAt(1), environment);
+            var value = evaluator.Evaluate(arguments.ElementAt(1), environment);
 
             if (!environment.SetSymbolValue(symbol, value))
             {
@@ -451,44 +465,44 @@ namespace Yalla.Evaluator
             return value;
         }
         
-        public object ApplyIf(ListNode arguments, Environment environment)
+        public object ApplyIf(IList<object> arguments, Environment environment)
         {
-            if (arguments.Children().Count > 3 || arguments.Children().Count < 2)
+            if (arguments.Count > 3 || arguments.Count < 2)
             {
                 throw new ArgumentException("Wrong number of arguments given to if! Expected: 2 or 3");
             }
 
-            var predicate = arguments.Children().ElementAt(0);
-            var successForm = arguments.Children().ElementAt(1);
+            var predicate = arguments.ElementAt(0);
+            var successForm = arguments.ElementAt(1);
 
             var result = evaluator.Evaluate(predicate, environment);
 
             if (result.GetType() == typeof(NilNode) ||
                 (result.GetType() == typeof(bool) && !((bool)result)))
             {
-                return arguments.Children().Count == 3 
-                    ? evaluator.Evaluate(arguments.Children().ElementAt(2), environment) 
+                return arguments.Count == 3 
+                    ? evaluator.Evaluate(arguments.ElementAt(2), environment) 
                     : new NilNode();
             }
 
             return evaluator.Evaluate(successForm, environment);
         }
 
-        public object ApplyLet(ListNode arguments, Environment environment)
+        public object ApplyLet(IList<object> arguments, Environment environment)
         {
             /*
              * (let ((var-a form-a) (var-b form-b)) (+ var-a var-b))
              */
 
-            var bindingList = (ListNode) arguments.First();
-            var bodyforms = arguments.Rest().Children().AsEnumerable();
+            var bindingList = (IList<object>) arguments.First();
+            var bodyforms = arguments.Skip(1).AsEnumerable();
 
             var localEnv = environment.CreateChildEnvironment();
 
-            foreach (var binding in bindingList.Children().OfType<ListNode>())
+            foreach (var binding in bindingList.OfType<IList<object>>())
             {
                 var symbol = (SymbolNode)binding.First();
-                var form = binding.Rest().First();
+                var form = binding.ElementAt(1);
 
                 var value = evaluator.Evaluate(form, localEnv);
 
@@ -498,21 +512,20 @@ namespace Yalla.Evaluator
             return evaluator.Evaluate(bodyforms, localEnv);
         }
                 
-        public object ApplyMap(ListNode arguments, Environment environment)
+        public object ApplyMap(IList<object> arguments, Environment environment)
         {
             /*
              * (map (lambda (x) (+ x 1)) '(1 2 3)) => (2 3 4)
              */
             
             var func = evaluator.Evaluate(arguments.First(), environment) as FunctionNode;
-            var list = evaluator.Evaluate(arguments.Rest().First(), environment) as ListNode;
+            var list = evaluator.Evaluate(arguments.ElementAt(1), environment) as IList<object>;
 
             if (func != null)
             {
                 if (list != null)
                 {
-                    ListNode result = new ListNode(list.Children().Select(
-                        x => Apply(func, new ListNode(new List<object> { x }), environment)).ToList());
+                    IList<object> result = list.Select(x => Apply(func, new List<object> { x }, environment)).ToList();
 
                     return result;
                 }
@@ -521,6 +534,141 @@ namespace Yalla.Evaluator
             }
             
             throw new ArgumentException("First argument to map not a function!");
+        }
+
+        private static bool IsLessThan(object left, object right)
+        {
+            if (left.GetType() == typeof(int))
+            {
+                if (right.GetType() == typeof(int))
+                {
+                    return (int)left < (int)right;
+                }
+                
+                if (right.GetType() == typeof(uint))
+                {
+                    return (int)left < (uint)right;
+                }
+
+                if (right.GetType() == typeof(long))
+                {
+                    return (int)left < (long)right;
+                }
+
+                if (right.GetType() == typeof(float))
+                {
+                    return (int)left < (float)right;
+                }
+
+                if (right.GetType() == typeof(decimal))
+                {
+                    return (int)left < (decimal)right;
+                }
+            }
+
+            if (left.GetType() == typeof(uint))
+            {
+                if (right.GetType() == typeof(int))
+                {
+                    return (uint)left < (int)right;
+                }
+
+                if (right.GetType() == typeof(uint))
+                {
+                    return (uint)left < (uint)right;
+                }
+
+                if (right.GetType() == typeof(long))
+                {
+                    return (uint)left < (long)right;
+                }
+
+                if (right.GetType() == typeof(float))
+                {
+                    return (uint)left < (float)right;
+                }
+
+                if (right.GetType() == typeof(decimal))
+                {
+                    return (uint)left < (decimal)right;
+                }
+            }
+
+            if (left.GetType() == typeof(long))
+            {
+                if (right.GetType() == typeof(int))
+                {
+                    return (long)left < (int)right;
+                }
+
+                if (right.GetType() == typeof(uint))
+                {
+                    return (long)left < (uint)right;
+                }
+
+                if (right.GetType() == typeof(long))
+                {
+                    return (long)left < (long)right;
+                }
+
+                if (right.GetType() == typeof(float))
+                {
+                    return (long)left < (float)right;
+                }
+
+                if (right.GetType() == typeof(decimal))
+                {
+                    return (long)left < (decimal)right;
+                }
+            }
+
+            if (left.GetType() == typeof(float))
+            {
+                if (right.GetType() == typeof(int))
+                {
+                    return (float)left < (int)right;
+                }
+
+                if (right.GetType() == typeof(uint))
+                {
+                    return (float)left < (uint)right;
+                }
+
+                if (right.GetType() == typeof(long))
+                {
+                    return (float)left < (long)right;
+                }
+
+                if (right.GetType() == typeof(float))
+                {
+                    return (float)left < (float)right;
+                }
+            }
+            
+            if (left.GetType() == typeof(decimal))
+            {
+                if (right.GetType() == typeof(int))
+                {
+                    return (decimal)left < (int)right;
+                }
+
+                if (right.GetType() == typeof(uint))
+                {
+                    return (decimal)left < (uint)right;
+                }
+
+                if (right.GetType() == typeof(long))
+                {
+                    return (decimal)left < (long)right;
+                }
+
+                if (right.GetType() == typeof(decimal))
+                {
+                    return (decimal)left < (decimal)right;
+                }
+            }
+
+            throw new ArgumentException("Not comparable types: " + left.GetType() + " and " + right.GetType());
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Yalla.Parser
     {
         private readonly Tokenizer.Tokenizer tokenizer;
 
-        private Stack<Tuple<ListNode, Stack<QuoteType>>> lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
+        private Stack<Tuple<IList<object>, Stack<QuoteType>>> lists = new Stack<Tuple<IList<object>, Stack<QuoteType>>>();
 
         public Parser(Tokenizer.Tokenizer tokenizer)
         {
@@ -38,8 +38,8 @@ namespace Yalla.Parser
 
         public IList<object> Parse(IEnumerable<Token> tokens)
         {
-            lists = new Stack<Tuple<ListNode, Stack<QuoteType>>>();
-            var result = new Tuple<ListNode, Stack<QuoteType>>(new ListNode(), new Stack<QuoteType>());
+            lists = new Stack<Tuple<IList<object>, Stack<QuoteType>>>();
+            var result = new Tuple<IList<object>, Stack<QuoteType>>(new List<object>(), new Stack<QuoteType>());
             lists.Push(result);
 
             foreach (var token in tokens)
@@ -47,7 +47,7 @@ namespace Yalla.Parser
                 switch (token.Type)
                 {
                     case Token.TokenType.LParen:
-                        lists.Push(new Tuple<ListNode, Stack<QuoteType>>(new ListNode(), new Stack<QuoteType>()));
+                        lists.Push(new Tuple<IList<object>, Stack<QuoteType>>(new List<object>(), new Stack<QuoteType>()));
                         break;
 
                     case Token.TokenType.RParen:
@@ -90,7 +90,7 @@ namespace Yalla.Parser
                 }
             }
 
-            return result.Item1.Children();
+            return result.Item1;
         }
 
         public object Parse(Token token)
@@ -136,7 +136,7 @@ namespace Yalla.Parser
                 }
             }
 
-            lists.Peek().Item1.AddChild(value);
+            lists.Peek().Item1.Add(value);
         }
     }
 }

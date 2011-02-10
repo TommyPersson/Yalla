@@ -22,7 +22,8 @@ namespace Yalla
                     { typeof(SpliceNode), (x, y) => x.PrettyPrintSub((SpliceNode)y) },
                     { typeof(string), (x, y) => x.PrettyPrintSub((string)y) },
                     { typeof(SymbolNode), (x, y) => x.PrettyPrintSub((SymbolNode)y) },
-                    { typeof(ListNode), (x, y) => x.PrettyPrintSub((ListNode)y) },
+                    { typeof(IList<object>), (x, y) => x.PrettyPrintSub((IList<object>)y) },
+                    { typeof(List<object>), (x, y) => x.PrettyPrintSub((IList<object>)y) },
                     { typeof(bool), (x, y) => x.PrettyPrintSub((bool)y) },
                     { typeof(object), (x, y) => x.PrettyPrintSub((object)y) },
                     { typeof(NilNode), (x, y) => x.PrettyPrintSub((NilNode)y) },
@@ -156,16 +157,16 @@ namespace Yalla
             stringWriter.Write("<procedure: " + node.Symbol + ">");
         }
 
-        private void PrettyPrintSub(ListNode node)
+        private void PrettyPrintSub(IList<object> node)
         {
             stringWriter.Write("(");
 
-            for (int i = 0; i < node.Children().Count; i++)
+            for (int i = 0; i < node.Count; i++)
             {
-                var printnode = node.Children().ElementAt(i);
+                var printnode = node.ElementAt(i);
                 PrettyPrintSub(printnode);
                 
-                if (i < node.Children().Count - 1)
+                if (i < node.Count - 1)
                 {
                     stringWriter.Write(" ");
                 }

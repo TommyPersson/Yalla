@@ -1,4 +1,4 @@
-
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Evaluator;
@@ -32,24 +32,24 @@ namespace Tests.Evaluator
         [Test]
         public void ShallSpliceListsIntoLists()
         {
-            var result = (ListNode)Evaluator.Evaluate("`(a b ~@'(c d))");
+            var result = (IList<object>)Evaluator.Evaluate("`(a b ~@'(c d))");
 
-            Assert.AreEqual("a", ((SymbolNode)result.Children().ElementAt(0)).Name);
-            Assert.AreEqual("b", ((SymbolNode)result.Children().ElementAt(1)).Name);
-            Assert.AreEqual("c", ((SymbolNode)result.Children().ElementAt(2)).Name);
-            Assert.AreEqual("d", ((SymbolNode)result.Children().ElementAt(3)).Name);
+            Assert.AreEqual("a", ((SymbolNode)result.ElementAt(0)).Name);
+            Assert.AreEqual("b", ((SymbolNode)result.ElementAt(1)).Name);
+            Assert.AreEqual("c", ((SymbolNode)result.ElementAt(2)).Name);
+            Assert.AreEqual("d", ((SymbolNode)result.ElementAt(3)).Name);
         }
 
         [Test]
         public void ShallHandleNestedBackQuotes()
         {
-            var result = (ListNode)Evaluator.Evaluate("`(a b ~@`(c d ~(+ 1 2)))");
+            var result = (IList<object>)Evaluator.Evaluate("`(a b ~@`(c d ~(+ 1 2)))");
 
-            Assert.AreEqual("a", ((SymbolNode)result.Children().ElementAt(0)).Name);
-            Assert.AreEqual("b", ((SymbolNode)result.Children().ElementAt(1)).Name);
-            Assert.AreEqual("c", ((SymbolNode)result.Children().ElementAt(2)).Name);
-            Assert.AreEqual("d", ((SymbolNode)result.Children().ElementAt(3)).Name);
-            Assert.AreEqual(3, ((int)result.Children().ElementAt(4)));
+            Assert.AreEqual("a", ((SymbolNode)result.ElementAt(0)).Name);
+            Assert.AreEqual("b", ((SymbolNode)result.ElementAt(1)).Name);
+            Assert.AreEqual("c", ((SymbolNode)result.ElementAt(2)).Name);
+            Assert.AreEqual("d", ((SymbolNode)result.ElementAt(3)).Name);
+            Assert.AreEqual(3, ((int)result.ElementAt(4)));
         }
     }
 }

@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
@@ -12,12 +13,12 @@ namespace Tests.Evaluator.Language
         {
             const string Program = "(list 1 2 3)";
 
-            var result = Evaluator.Evaluate(Program) as ListNode;
+            var result = Evaluator.Evaluate(Program) as IList<object>;
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Children().Contains(AstNode.MakeNode(1)));
-            Assert.IsTrue(result.Children().Contains(AstNode.MakeNode(2)));
-            Assert.IsTrue(result.Children().Contains(AstNode.MakeNode(3)));
+            Assert.IsTrue(result.Contains(AstNode.MakeNode(1)));
+            Assert.IsTrue(result.Contains(AstNode.MakeNode(2)));
+            Assert.IsTrue(result.Contains(AstNode.MakeNode(3)));
         }
 
         [Test]
@@ -35,12 +36,12 @@ namespace Tests.Evaluator.Language
         {
             const string Program = "(rest (list 1 2 3))";
 
-            var result = Evaluator.Evaluate(Program) as ListNode;
+            var result = Evaluator.Evaluate(Program) as IList<object>;
 
             Assert.IsNotNull(result);
-            Assert.IsFalse(result.Children().Contains(AstNode.MakeNode(1)));
-            Assert.IsTrue(result.Children().Contains(AstNode.MakeNode(2)));
-            Assert.IsTrue(result.Children().Contains(AstNode.MakeNode(3)));
+            Assert.IsFalse(result.Contains(AstNode.MakeNode(1)));
+            Assert.IsTrue(result.Contains(AstNode.MakeNode(2)));
+            Assert.IsTrue(result.Contains(AstNode.MakeNode(3)));
         }
 
         [Test]

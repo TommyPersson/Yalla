@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -43,11 +44,11 @@ namespace Tests.Evaluator.PrimitiveFunctions
             const string Program = "(def fn (lambda (& body) body))\n" +
                                      "(fn 1 2 3)\n";
 
-            var result = Evaluator.Evaluate(Program) as ListNode;
+            var result = Evaluator.Evaluate(Program) as IList<object>;
 
             Assert.IsNotNull(result);
 
-            var items = result.Children();
+            var items = result;
 
             Assert.AreEqual(1, ((int)items[0]));
             Assert.AreEqual(2, ((int)items[1]));

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Yalla.Parser.AstObjects;
 
@@ -17,6 +18,7 @@ namespace Yalla.Evaluator
                                     { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
                                     { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
                                     { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
+                                    { new SymbolNode("<"), FunctionNode.PrimitiveFunctions["<"] },
                                     { new SymbolNode("cons"), FunctionNode.PrimitiveFunctions["cons"] },
                                     { new SymbolNode("lambda"), FunctionNode.PrimitiveFunctions["lambda"] },
                                     { new SymbolNode("def"), FunctionNode.PrimitiveFunctions["def"] },
@@ -37,7 +39,8 @@ namespace Yalla.Evaluator
         private readonly IDictionary<Type, Func<Evaluator, object, Environment, object>> evaluationFunctions =
             new Dictionary<Type, Func<Evaluator, object, Environment, object>>
                 {
-                    { typeof(ListNode), (x, y, z) => x.Evaluate((ListNode)y, z) },
+                    { typeof(IList<object>), (x, y, z) => x.Evaluate((IList<object>)y, z) },
+                    { typeof(List<object>), (x, y, z) => x.Evaluate((IList<object>)y, z) },
                     { typeof(bool), (x, y, z) => x.EvaluateToSelf(y, z) },
                     { typeof(int), (x, y, z) => x.EvaluateToSelf(y, z) },
                     { typeof(decimal), (x, y, z) => x.EvaluateToSelf(y, z) },
@@ -103,7 +106,7 @@ namespace Yalla.Evaluator
             return lastResult;
         }
 
-        public object Evaluate(ListNode node, Environment environment)
+        public object Evaluate(IList<object> node, Environment environment)
         {
             FunctionNode function = Evaluate(node.First(), environment) as FunctionNode;
 
@@ -112,7 +115,7 @@ namespace Yalla.Evaluator
                 throw new ArgumentException("First item in list not a function!");
             }
 
-            return applier.Apply(function, node.Rest(), environment);
+            return applier.Apply(function, node.Skip(1).ToList(), environment);
         }
         
         public object Evaluate(QuoteNode node, Environment environment)

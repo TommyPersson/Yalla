@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -105,10 +106,10 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("()");
 
-            var listNode = result.First() as ListNode;
+            var listNode = result.First() as IList<object>;
 
             Assert.IsNotNull(listNode);
-            Assert.AreEqual(0, listNode.Children().Count);
+            Assert.AreEqual(0, listNode.Count);
         }
 
         [Test]
@@ -116,13 +117,13 @@ namespace Tests.Parser
         {
             var result = Parser.Parse("(+ 1 2)");
 
-            var listNode = result.First() as ListNode;
+            var listNode = result.First() as IList<object>;
 
             Assert.IsNotNull(listNode);
-            Assert.AreEqual(3, listNode.Children().Count);
-            Assert.AreEqual(new SymbolNode("+"), listNode.Children().ElementAt(0));
-            Assert.AreEqual(1, listNode.Children().ElementAt(1));
-            Assert.AreEqual(2, listNode.Children().ElementAt(2));
+            Assert.AreEqual(3, listNode.Count);
+            Assert.AreEqual(new SymbolNode("+"), listNode.ElementAt(0));
+            Assert.AreEqual(1, listNode.ElementAt(1));
+            Assert.AreEqual(2, listNode.ElementAt(2));
         }
 
         [Test]

@@ -1,8 +1,8 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
@@ -12,7 +12,7 @@ namespace Tests.Evaluator.PrimitiveFunctions
         [Test]
         public void ShallBeAbleToConsAnObjectAndLists()
         {
-            Assert.AreEqual(2, ((int)((ListNode)Evaluator.Evaluate("(cons 1 (list 2))")).Children().ElementAt(1)));
+            Assert.AreEqual(2, ((int)((IList<object>)Evaluator.Evaluate("(cons 1 (list 2))")).ElementAt(1)));
         }
 
         [Test]

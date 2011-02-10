@@ -11,6 +11,7 @@ namespace Yalla.Parser.AstObjects
                 {
                     { "+", new PrimitiveFunction("+") },
                     { "=", new PrimitiveFunction("=") },
+                    { "<", new PrimitiveFunction("<") },
                     { "and", new PrimitiveFunction("and") },
                     { "or", new PrimitiveFunction("or") },
                     { "cons", new PrimitiveFunction("cons") },

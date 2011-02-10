@@ -1,4 +1,5 @@
-﻿;;; Functions
+﻿
+;;; Functions
 
 (defmacro defun (sym params & body)
   `(def ~sym (lambda ~params ~@body)))
@@ -12,6 +13,15 @@
 ;;; Logic
 
 (defun not (form) (if form false true))
+
+;;; Comparison
+
+(defun > (l r)  (not (or (< l r) (= l r))))
+
+;;; Strings
+
+(defun str (& strings)
+  (Yalla.Evaluator.Language.Helpers/Str strings))
 
 ;;; Control flow
 

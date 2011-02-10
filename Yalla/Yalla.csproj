@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -50,6 +50,7 @@
     <Compile Include="Evaluator\BackquoteExpander.cs" />
     <Compile Include="Evaluator\Environment.cs" />
     <Compile Include="Evaluator\Evaluator.cs" />
+    <Compile Include="Evaluator\Language\Helpers.cs" />
     <Compile Include="Parser\AstObjects\AstNode.cs" />
     <Compile Include="Parser\AstObjects\BackquoteNode.cs" />
     <Compile Include="Parser\AstObjects\NilNode.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="Tokenizer\Token.cs" />
     <Compile Include="Tokenizer\Tokenizer.cs" />
     <Compile Include="Parser\AstObjects\SymbolNode.cs" />
-    <Compile Include="Parser\AstObjects\ListNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Evaluator\Language\Core.yl" />

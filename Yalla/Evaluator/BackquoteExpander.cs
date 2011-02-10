@@ -15,7 +15,8 @@ namespace Yalla.Evaluator
                     { typeof(BackquoteNode), (x, y, z, t) => x.ExpandBackquote((BackquoteNode)y, z, t) },
                     { typeof(SpliceNode), (x, y, z, t) => x.ExpandSplice((SpliceNode)y, z) },
                     { typeof(UnquoteNode), (x, y, z, t) => x.ExpandUnquote((UnquoteNode)y, z, t) },
-                    { typeof(ListNode), (x, y, z, t) => x.ExpandListNode((ListNode)y, z, t) },
+                    { typeof(IList<object>), (x, y, z, t) => x.ExpandList((IList<object>)y, z, t) },
+                    { typeof(List<object>), (x, y, z, t) => x.ExpandList((IList<object>)y, z, t) },
                     { typeof(QuoteNode), (x, y, z, t) => x.ExpandToQuoted(y, z) },
                     { typeof(int), (x, y, z, t) => x.ExpandToQuoted(y, z) },
                     { typeof(string), (x, y, z, t) => x.ExpandToQuoted(y, z) },
@@ -40,33 +41,31 @@ namespace Yalla.Evaluator
             return node;
         }
 
-        public object ExpandListNode(ListNode node, int backquoteDepth, Environment environment)
+        public object ExpandList(IList<object> node, int backquoteDepth, Environment environment)
         {
-            var result = new ListNode();
+            var result = new List<object>();
 
-            foreach (var child in node.Children())
+            foreach (var child in node)
             {
+                var t = child.GetType();
+
                 if (child.GetType() == typeof(SpliceNode))
                 {
-                    var spliceList = evaluator.Evaluate(Expand(((SpliceNode)child).InnerValue, backquoteDepth - 1, environment), environment) as ListNode;
+                    var spliceList = evaluator.Evaluate(Expand(((SpliceNode)child).InnerValue, backquoteDepth - 1, environment), environment) as IList<object>;
                     if (spliceList == null)
                     {
                         throw new ArgumentException("Cannot splice non-list!");
                     }
 
-                    foreach (var item in spliceList.Children())
-                    {
-                        result.AddChild(item);
-                    }
+                    result.AddRange(spliceList);
                 }
-                else if (child.GetType() == typeof(ListNode) ||
-                    child.GetType() == typeof(UnquoteNode))
+                else if (child.GetType() == typeof(List<object>) || child.GetType() == typeof(UnquoteNode))
                 {
-                    result.AddChild(Expand(child, backquoteDepth, environment));        
+                    result.Add(Expand(child, backquoteDepth, environment));        
                 }
                 else
                 {
-                    result.AddChild(child);
+                    result.Add(child);
                 }
             }
 
