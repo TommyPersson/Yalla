@@ -49,7 +49,7 @@ namespace Yalla.Evaluator
             {
                 var t = child.GetType();
 
-                if (child.GetType() == typeof(SpliceNode))
+                if (t == typeof(SpliceNode))
                 {
                     var spliceList = evaluator.Evaluate(Expand(((SpliceNode)child).InnerValue, backquoteDepth - 1, environment), environment) as IList<object>;
                     if (spliceList == null)
@@ -59,7 +59,7 @@ namespace Yalla.Evaluator
 
                     result.AddRange(spliceList);
                 }
-                else if (child.GetType() == typeof(List<object>) || child.GetType() == typeof(UnquoteNode))
+                else if (t == typeof(List<object>) || t == typeof(UnquoteNode))
                 {
                     result.Add(Expand(child, backquoteDepth, environment));        
                 }

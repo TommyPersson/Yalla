@@ -41,8 +41,8 @@ namespace Yalla.Tokenizer
         {
             inputBuffer = input.Replace('\r', '\n');
             inputPosition = 0;
-            lookAhead[0] = inputBuffer.ElementAt(inputPosition);
-            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?)null;
+            lookAhead[0] = inputBuffer[inputPosition];
+            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer[inputPosition + 1] : (char?)null;
         }
 
         private bool HasMoreTokens()
@@ -264,8 +264,8 @@ namespace Yalla.Tokenizer
 
             inputPosition++;
 
-            lookAhead[0] = inputPosition < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition) : (char?) null;
-            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer.ElementAt(inputPosition + 1) : (char?) null;
+            lookAhead[0] = inputPosition < inputBuffer.Length ? inputBuffer[inputPosition] : (char?) null;
+            lookAhead[1] = inputPosition + 1 < inputBuffer.Length ? inputBuffer[inputPosition + 1] : (char?) null;
         }
     }
 }
