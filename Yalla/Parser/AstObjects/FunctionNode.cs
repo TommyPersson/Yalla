@@ -22,6 +22,7 @@ namespace Yalla.Parser.AstObjects
                     { "if", new PrimitiveFunction("if") },
                     { "let", new PrimitiveFunction("let") },
                     { "map", new PrimitiveFunction("map") },
+                    { "make-func", new PrimitiveFunction("make-func") },
                 };
         
 

@@ -27,6 +27,7 @@ namespace Yalla.Evaluator
                                     { new SymbolNode("if"), FunctionNode.PrimitiveFunctions["if"] },
                                     { new SymbolNode("let"), FunctionNode.PrimitiveFunctions["let"] },
                                     { new SymbolNode("map"), FunctionNode.PrimitiveFunctions["map"] },
+                                    { new SymbolNode("make-func"), FunctionNode.PrimitiveFunctions["make-func"] },
                                     { new SymbolNode("nil"), new NilNode() },
                                     { new SymbolNode("true"), AstNode.MakeNode(true) },
                                     { new SymbolNode("false"), AstNode.MakeNode(false) }
@@ -41,15 +42,9 @@ namespace Yalla.Evaluator
                 {
                     { typeof(IList<object>), (x, y, z) => x.Evaluate((IList<object>)y, z) },
                     { typeof(List<object>), (x, y, z) => x.Evaluate((IList<object>)y, z) },
-                    { typeof(bool), (x, y, z) => x.EvaluateToSelf(y, z) },
-                    { typeof(int), (x, y, z) => x.EvaluateToSelf(y, z) },
-                    { typeof(decimal), (x, y, z) => x.EvaluateToSelf(y, z) },
-                    { typeof(string), (x, y, z) => x.EvaluateToSelf(y, z) },
-                    { typeof(object), (x, y, z) => x.EvaluateToSelf(y, z) },
                     { typeof(QuoteNode), (x, y, z) => x.Evaluate((QuoteNode)y, z) },
                     { typeof(BackquoteNode), (x, y, z) => x.Evaluate((BackquoteNode)y, z) },
                     { typeof(SymbolNode), (x, y, z) => x.Evaluate((SymbolNode)y, z) },
-                    { typeof(FunctionNode), (x, y, z) => x.EvaluateToSelf(y, z) },
                 };
 
         public Evaluator(Parser.Parser parser, Environment environmentExtensions, TextWriter stdOut, TextReader stdIn)
@@ -84,14 +79,12 @@ namespace Yalla.Evaluator
 
         public object Evaluate(object node, Environment environment)
         {
-            try
+            if (evaluationFunctions.ContainsKey(node.GetType()))
             {
                 return evaluationFunctions[node.GetType()].Invoke(this, node, environment);
             }
-            catch (KeyNotFoundException)
-            {
-                throw new SyntaxErrorException("Cannot evaluate " + node.GetType() + " in this context.");
-            }
+
+            return EvaluateToSelf(node, environment);
         }
 
         public object Evaluate(IEnumerable<object> forms, Environment environment)
@@ -139,7 +132,7 @@ namespace Yalla.Evaluator
             {
                 return new NativeConstructorFunctionNode(node.Name.TrimEnd('.'));
             }
-
+            
             var split = node.Name.Split('/');
 
             if (split.Length > 1)
@@ -151,7 +144,12 @@ namespace Yalla.Evaluator
 
                 return new NativeStaticMethodFunctionNode(split[0], split[1]);
             }
-            
+
+            if (node.Name.Contains("."))
+            {
+                Type t = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(node.Name, false, false)).FirstOrDefault(x => x != null);
+                return t;
+            }
 
             if (environment.CanLookUpSymbol(node))
             {

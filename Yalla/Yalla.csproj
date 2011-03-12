@@ -50,7 +50,8 @@
     <Compile Include="Evaluator\BackquoteExpander.cs" />
     <Compile Include="Evaluator\Environment.cs" />
     <Compile Include="Evaluator\Evaluator.cs" />
-    <Compile Include="Evaluator\Language\Helpers.cs" />
+    <Compile Include="Evaluator\Language\ListHelpers.cs" />
+    <Compile Include="Evaluator\Language\StringHelpers.cs" />
     <Compile Include="Parser\AstObjects\AstNode.cs" />
     <Compile Include="Parser\AstObjects\BackquoteNode.cs" />
     <Compile Include="Parser\AstObjects\NilNode.cs" />

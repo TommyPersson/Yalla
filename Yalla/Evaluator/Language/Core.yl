@@ -21,7 +21,7 @@
 ;;; Strings
 
 (defun str (& strings)
-  (Yalla.Evaluator.Language.Helpers/Str strings))
+  (Yalla.Evaluator.Language.StringHelpers/Str strings))
 
 ;;; Control flow
 
@@ -33,9 +33,7 @@
 
 (defmacro unless (predicate & body)
   `(if ~predicate nil (do ~@body))) 
-
-
-
+  
 ;;; IO   
          
 (defun println (l)
@@ -59,16 +57,20 @@
 (defun list (& args) args)
 
 (defun first (lst)
-  (.First lst))
+  (Yalla.Evaluator.Language.ListHelpers/First lst))
 
 (defun rest (lst)
-  (.Rest lst))
+  (Yalla.Evaluator.Language.ListHelpers/Rest lst))
 
 (defun empty? (lst)
-  (.IsEmpty lst))
+  (Yalla.Evaluator.Language.ListHelpers/IsEmpty lst))
 
 (defun second (lst)
   (first (rest lst)))
+
+(defun first-or-default (lst pred)
+  (Yalla.Evaluator.Language.ListHelpers/FirstOrDefault lst 
+                                                       (make-func (list System.Object System.Boolean) pred)))
 
 (defmacro dolist (binding & body)
   `(let ((list123 ~(second binding))

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Yalla.Parser.AstObjects;
 
@@ -23,6 +24,7 @@ namespace Yalla.Evaluator
                 {
                     { "+", (x, y, z) => x.ApplyAdd(y, z) },
                     { "=", (x, y, z) => x.ApplyEquals(y, z) },
+                    { "<", (x, y, z) => x.ApplyLessThan(y, z) },
                     { "and", (x, y, z) => x.ApplyAnd(y, z) },
                     { "or", (x, y, z) => x.ApplyOr(y, z) },
                     { "cons", (x, y, z) => x.ApplyCons(y, z) },
@@ -33,7 +35,7 @@ namespace Yalla.Evaluator
                     { "if", (x, y, z) => x.ApplyIf(y, z) },
                     { "let", (x, y, z) => x.ApplyLet(y, z) },
                     { "map", (x, y, z) => x.ApplyMap(y, z) },
-                    { "<", (x, y, z) => x.ApplyLessThan(y, z) },
+                    { "make-func", (x, y, z) => x.ApplyMakeFunc(y, z)}
                 };
 
         private readonly Evaluator evaluator;
@@ -199,7 +201,7 @@ namespace Yalla.Evaluator
                 {
                     return AstNode.MakeNode(method.Invoke(null, args));
                 }
-
+                
                 var property = type.GetProperty(methodName, BindingFlags.Public | BindingFlags.Static);
                 if (property != null)
                 {
@@ -536,6 +538,28 @@ namespace Yalla.Evaluator
             throw new ArgumentException("First argument to map not a function!");
         }
 
+        private object ApplyMakeFunc(IList<object> objects, Environment environment)
+        {
+            /*
+             * (make-func (list (get-list-type lst) System.Boolean) (lambda (x) (= (.Name x) "hej"))
+             * */
+            var types = ((IList<object>)evaluator.Evaluate(objects.First(), environment)).Cast<Type>();
+
+            var proc = (ProcedureNode)evaluator.Evaluate(objects.ElementAt(1), environment);
+
+            if (types.Count() == 2)
+            {
+                return MakeFunc2(types.ElementAt(0), types.ElementAt(1), proc, environment);
+            }
+            
+            if (types.Count() == 3)
+            {
+                return MakeFunc3(types.ElementAt(0), types.ElementAt(1), types.ElementAt(2), proc, environment);
+            }
+
+            throw new ArgumentException("Could not create func of types " + types.Select(x => x.ToString()).Aggregate((s1, s2) => s1 + ", " + s2));
+        }
+
         private static bool IsLessThan(object left, object right)
         {
             if (left.GetType() == typeof(int))
@@ -669,6 +693,38 @@ namespace Yalla.Evaluator
             }
 
             throw new ArgumentException("Not comparable types: " + left.GetType() + " and " + right.GetType());
+        }
+
+        private static Func<TArg, TRes> MakeFunc2Generic<TArg, TRes>(Expression<Func<object, object>> func)
+        {
+            var converted = Expression.Convert(func.Body, typeof(TRes));
+
+            return Expression.Lambda<Func<TArg, TRes>>(converted, func.Parameters).Compile();
+        }
+
+        private static Func<TArg1, TArg2, TRes> MakeFunc3Generic<TArg1, TArg2, TRes>(Expression<Func<object, object>> func)
+        {
+            var converted = Expression.Convert(func.Body, typeof(TRes));
+
+            return Expression.Lambda<Func<TArg1, TArg2, TRes>>(converted, func.Parameters).Compile();
+        }
+
+        private object MakeFunc2(Type arg, Type res, ProcedureNode proc, Environment env)
+        {
+            Expression<Func<object, object>> funcExpr = x => Apply(proc, new[] { x }, env);
+
+            var methodInfo = GetType().GetMethod("MakeFunc2Generic", BindingFlags.Static | BindingFlags.NonPublic);
+
+            return methodInfo.MakeGenericMethod(arg, res).Invoke(null, new object[] { funcExpr });
+        }
+
+        private object MakeFunc3(Type arg1, Type arg2, Type res, ProcedureNode proc, Environment env)
+        {
+            Expression<Func<object, object, object>> funcExpr = (x, y) => Apply(proc, new[] { x, y }, env);
+
+            var methodInfo = GetType().GetMethod("MakeFunc3Generic", BindingFlags.Static | BindingFlags.NonPublic);
+
+            return methodInfo.MakeGenericMethod(arg1, arg2, res).Invoke(null, new object[] { funcExpr });
         }
     }
 }
