@@ -6,7 +6,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Evaluator.Language
 {
     [TestFixture]
-    internal class Lists : LanguageTestBase
+    public class Lists : LanguageTestBase
     {
         [Test]
         public void ShallBeAbleToCreateLists()
@@ -71,6 +71,18 @@ namespace Tests.Evaluator.Language
             Assert.AreEqual(new SymbolNode("r1"), result1);
             Assert.AreEqual(new SymbolNode("r2"), result2);
             Assert.IsNotNull(result3);
+        }
+        
+        [Test]
+        public void FirstOrDefaultShallWorkOnValueTypeIEnumerables()
+        {
+            Evaluator.GlobalEnvironment.SetSymbolValue(new SymbolNode("numbers"), new List<int> { 1, 2, 3 });
+            
+            const string Program = "(first-or-default numbers (lambda (x) (= x 2)))";
+            
+            var result = (int)Evaluator.Evaluate(Program);
+            
+            Assert.AreEqual(2, result);
         }
     }
 }

@@ -68,10 +68,16 @@
 (defun second (lst)
   (first (rest lst)))
 
-(defun first-or-default (lst pred)
-  (Yalla.Evaluator.Language.ListHelpers/FirstOrDefault lst 
-                                                       (make-func (list System.Object System.Boolean) pred)))
+(defun of-type (type lst)
+  (Yalla.Evaluator.Language.ListHelpers/OfType type lst))
+  
+(defun filter (lst pred)
+  (Yalla.Evaluator.Language.ListHelpers/Filter lst (make-func (list System.Object System.Boolean) pred)))
 
+(defun first-or-default (lst pred)
+  (Yalla.Evaluator.Language.ListHelpers/FirstOrDefault lst (make-func (list System.Object System.Boolean) pred)))
+
+  
 (defmacro dolist (binding & body)
   `(let ((list123 ~(second binding))
          (~(first binding) (first list123)))

@@ -1,32 +1,45 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Yalla.Evaluator.Language
 {
     public class ListHelpers
-    {
-        public static IEnumerable<object> Rest(IEnumerable<object> lst)
+    {        
+        public static IEnumerable<object> Rest(IEnumerable lst)
         {
-            return lst.Skip(1);
+            return lst.OfType<object>().Skip(1);
         }
 
-        public static bool IsEmpty(IEnumerable<object> lst)
+        public static bool IsEmpty(IEnumerable lst)
         {
-            using (var e = lst.GetEnumerator())
-            {
-                return !e.MoveNext();
-            }
+            return lst.OfType<object>().DefaultIfEmpty() == null;
         }
 
-        public static object First(IEnumerable<object> lst)
+        public static object First(IEnumerable lst)
         {
-            return lst.First();
+            return lst.OfType<object>().FirstOrDefault();
         }
 
-        public static object FirstOrDefault(IEnumerable<object> lst, Func<object, bool> pred)
+        public static object FirstOrDefault(IEnumerable lst, Func<object, bool> pred)
         {
-            return lst.FirstOrDefault(pred);
+            return lst.OfType<object>().FirstOrDefault(pred);
+        }
+
+        public static object Filter(IEnumerable lst, Func<object, bool> pred)
+        {
+            return lst.OfType<object>().Where(pred);
+        }
+        
+        public static object OfType(Type type, IEnumerable lst)
+        {
+            var ofTypeMethodInfo = typeof(Enumerable).GetMethod("OfType");
+            var genericMeth = ofTypeMethodInfo.MakeGenericMethod(type);
+            var result = genericMeth.Invoke(null, new[] { lst });
+            
+            return result;
         }
     }
 }

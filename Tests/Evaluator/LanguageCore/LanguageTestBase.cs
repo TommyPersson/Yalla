@@ -5,7 +5,7 @@ using Yalla.Evaluator;
 
 namespace Tests.Evaluator.Language
 {
-    internal class LanguageTestBase
+    public class LanguageTestBase
     {
         protected Yalla.Parser.Parser Parser { get; set; }
 
@@ -16,7 +16,7 @@ namespace Tests.Evaluator.Language
         protected StringReader StdIn { get; set; }
 
         [SetUp]
-        protected void Setup()
+        public void Setup()
         {
             Parser = new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer());
 

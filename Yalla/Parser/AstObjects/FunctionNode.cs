@@ -1,6 +1,6 @@
-
 using System.Collections.Generic;
 using Yalla.Evaluator;
+using Environment = Yalla.Evaluator.Environment;
 
 namespace Yalla.Parser.AstObjects
 {

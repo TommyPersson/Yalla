@@ -521,7 +521,7 @@ namespace Yalla.Evaluator
              */
             
             var func = evaluator.Evaluate(arguments.First(), environment) as FunctionNode;
-            var list = evaluator.Evaluate(arguments.ElementAt(1), environment) as IList<object>;
+            var list = evaluator.Evaluate(arguments.ElementAt(1), environment) as IEnumerable<object>;
 
             if (func != null)
             {

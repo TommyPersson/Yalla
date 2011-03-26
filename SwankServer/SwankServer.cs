@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -9,6 +10,7 @@ using System.Text.RegularExpressions;
 using Yalla;
 using Yalla.Evaluator;
 using Yalla.Parser;
+using Yalla.Parser.AstObjects;
 using Yalla.Tokenizer;
 using Environment = Yalla.Evaluator.Environment;
 
@@ -56,8 +58,7 @@ namespace SwankServer
             // wireshark filter: tcp.port eq 4005 and data
 						
 			try
-			{
-				
+			{				
 				while(true)
 				{
 					var countChars = new char[6];
@@ -82,12 +83,12 @@ namespace SwankServer
 							writer.Write(message1);
 							
 							var message = CreateMessage("(:return (:ok (:pid \"2229\" :style :spawn " + 
-							                                          ":lisp-implementation (:type \"Yalla\" :name \"yalla\" :version \"0.1.0\") " + 
-							                                          ":package (:name \"yalla.user\" :prompt \"yalla.user\") " + 
-							                                          ":version \"20xx\")) 1)");
+                                                        "               :lisp-implementation (:type \"Yalla\" :name \"yalla\" :version \"0.1.0\") " + 
+                                                        "               :package (:name \"yalla.user\" :prompt \"yalla.user\") " + 
+                                                        "               :version \"20xx\")) 1)");
 							writer.Write(message);
 							writer.Flush();
-                            
+                                                        
                             Console.Out.WriteLine("Connection info sent!");
 						}
 						else if (sbuf.Contains("swank:create-repl"))
@@ -117,7 +118,8 @@ namespace SwankServer
 							}
 							catch (Exception e)
 							{
-								SwankWrite(e.Message);
+                                var inner = GetInnerMostException(e);
+                                SwankWrite(inner.Message);
 							}
 								
 							SwankReturn();
@@ -135,6 +137,16 @@ namespace SwankServer
 			}	
 		}
 			
+        private Exception GetInnerMostException(Exception e)
+        {
+            if (e.InnerException != null)
+            {
+                return GetInnerMostException(e.InnerException);
+            }
+            
+            return e;                
+        }
+        
 		private void SwankWrite(string msg)
 		{
 			var message1 = CreateMessage("(:write-string \"" + msg + "\")");
