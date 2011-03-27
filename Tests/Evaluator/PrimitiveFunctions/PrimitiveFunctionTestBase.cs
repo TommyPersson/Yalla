@@ -5,7 +5,7 @@ using Yalla.Evaluator;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
-    internal class PrimitiveFunctionTestBase
+    public class PrimitiveFunctionTestBase
     {
         protected Yalla.Parser.Parser Parser { get; set; }
 
@@ -16,7 +16,7 @@ namespace Tests.Evaluator.PrimitiveFunctions
         protected TextReader StdIn { get; set; }
 
         [SetUp]
-        protected void Setup()
+        public void Setup()
         {
             Parser = new Yalla.Parser.Parser(new Yalla.Tokenizer.Tokenizer());
 

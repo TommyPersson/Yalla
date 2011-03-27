@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class If : PrimitiveFunctionTestBase
+    public class If : PrimitiveFunctionTestBase
     {
         [Test]
         public void IfShallReturnFirstFormOnlyIfPredicateReturnsTrue()

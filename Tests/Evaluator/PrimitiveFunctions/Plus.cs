@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Plus : PrimitiveFunctionTestBase
+    public class Plus : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToAddValues()

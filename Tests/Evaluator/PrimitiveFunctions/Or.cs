@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Or : PrimitiveFunctionTestBase
+    public class Or : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToOrBooleans()

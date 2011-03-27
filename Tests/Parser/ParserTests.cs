@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Parser
 {
     [TestFixture]
-    internal class ParserTests
+    public class ParserTests
     {
         private Yalla.Parser.Parser Parser { get; set; }
 

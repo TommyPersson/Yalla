@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using NUnit.Framework;
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Map : PrimitiveFunctionTestBase
+    public class Map : PrimitiveFunctionTestBase
     {
         [Test]
         public void MapShallMapLambdaAcrossList()

@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Equals : PrimitiveFunctionTestBase
+    public class Equals : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToCompareValues()

@@ -1,10 +1,9 @@
-
 using NUnit.Framework;
 
 namespace Tests.Evaluator.Language
 {
     [TestFixture]
-    internal class Io : LanguageTestBase
+    public class Io : LanguageTestBase
     {
         [Test]
         public void PrintlnShallWriteToStdOut()

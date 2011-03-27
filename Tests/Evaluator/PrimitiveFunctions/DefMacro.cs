@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class DefMacro : PrimitiveFunctionTestBase
+    public class DefMacro : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToDefineMacros()

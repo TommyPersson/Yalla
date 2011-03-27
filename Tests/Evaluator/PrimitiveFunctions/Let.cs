@@ -1,4 +1,3 @@
-
 using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -6,7 +5,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Let : PrimitiveFunctionTestBase
+    public class Let : PrimitiveFunctionTestBase
     {
         [Test]
         public void LetShallBindVariablesInBindingListToTheLocalEnvironment()

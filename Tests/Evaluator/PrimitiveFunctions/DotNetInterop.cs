@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class DotNetInterop : PrimitiveFunctionTestBase
+    public class DotNetInterop : PrimitiveFunctionTestBase
     {
         [Test]
         public void NativeMethodsAreSymbolsThatBeginWithADot()

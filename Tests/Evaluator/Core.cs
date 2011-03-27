@@ -1,4 +1,3 @@
-
 using System;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -7,7 +6,7 @@ using Environment = Yalla.Evaluator.Environment;
 namespace Tests.Evaluator
 {
     [TestFixture]
-    internal class Core
+    public class Core
     {
         private Yalla.Evaluator.Evaluator Evaluator { get; set; }
 

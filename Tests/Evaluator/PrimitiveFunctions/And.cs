@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class And : PrimitiveFunctionTestBase
+    public class And : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToAndValues()

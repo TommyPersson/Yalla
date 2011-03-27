@@ -1,4 +1,3 @@
-
 using System;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
@@ -6,7 +5,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Set : PrimitiveFunctionTestBase
+    public class Set : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallBeAbleToSetDefinedVariables()

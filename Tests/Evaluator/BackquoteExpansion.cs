@@ -7,7 +7,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Evaluator
 {
     [TestFixture]
-    internal class BackquoteExpansion
+    public class BackquoteExpansion
     {
         private Yalla.Evaluator.Evaluator Evaluator { get; set; }
 

@@ -1,11 +1,10 @@
-
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
 namespace Tests.Evaluator.Language
 {
     [TestFixture]
-    internal class FlowControl : LanguageTestBase
+    public class FlowControl : LanguageTestBase
     {
         [Test]
         public void DoReturnsLastEvaluatedForm()

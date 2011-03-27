@@ -1,4 +1,3 @@
-
 using System.Data;
 using System.Linq;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using Yalla.Tokenizer;
 namespace Tests.Tokenizer
 {
     [TestFixture]
-    internal class TokenizerTests
+    public class TokenizerTests
     {
         [Test]
         public void CanTokenizeParentheses()

@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using Yalla.Parser.AstObjects;
 namespace Tests.Evaluator.PrimitiveFunctions
 {
     [TestFixture]
-    internal class Lambda : PrimitiveFunctionTestBase
+    public class Lambda : PrimitiveFunctionTestBase
     {
         [Test]
         public void ShallReturnAProcedureObject()
