@@ -15,7 +15,7 @@ namespace Yalla.Evaluator.Language
 
         public static bool IsEmpty(IEnumerable lst)
         {
-            return lst.OfType<object>().DefaultIfEmpty() == null;
+            return !lst.OfType<object>().Any();
         }
 
         public static object First(IEnumerable lst)

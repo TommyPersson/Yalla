@@ -1,5 +1,5 @@
-
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Yalla.Parser.AstObjects;
 
@@ -13,7 +13,7 @@ namespace Tests.Evaluator.Language
         {
             const string Program = "(list 1 2 3)";
 
-            var result = Evaluator.Evaluate(Program) as IList<object>;
+            var result = Evaluator.Evaluate(Program) as IEnumerable<object>;
 
             Assert.IsNotNull(result);
             Assert.IsTrue(result.Contains(AstNode.MakeNode(1)));
@@ -36,7 +36,7 @@ namespace Tests.Evaluator.Language
         {
             const string Program = "(rest (list 1 2 3))";
 
-            var result = Evaluator.Evaluate(Program) as IList<object>;
+            var result = Evaluator.Evaluate(Program) as IEnumerable<object>;
 
             Assert.IsNotNull(result);
             Assert.IsFalse(result.Contains(AstNode.MakeNode(1)));
@@ -76,7 +76,7 @@ namespace Tests.Evaluator.Language
         [Test]
         public void FirstOrDefaultShallWorkOnValueTypeIEnumerables()
         {
-            Evaluator.GlobalEnvironment.SetSymbolValue(new SymbolNode("numbers"), new List<int> { 1, 2, 3 });
+            Evaluator.GlobalEnvironment.DefineSymbol(new SymbolNode("numbers"), new List<int> { 1, 2, 3 });
             
             const string Program = "(first-or-default numbers (lambda (x) (= x 2)))";
             
