@@ -10,6 +10,7 @@ namespace Yalla.Parser.AstObjects
             new Dictionary<string, FunctionNode>
                 {
                     { "+", new PrimitiveFunction("+") },
+                    { "*", new PrimitiveFunction("*") },
                     { "=", new PrimitiveFunction("=") },
                     { "<", new PrimitiveFunction("<") },
                     { "and", new PrimitiveFunction("and") },
@@ -23,6 +24,9 @@ namespace Yalla.Parser.AstObjects
                     { "let", new PrimitiveFunction("let") },
                     { "map", new PrimitiveFunction("map") },
                     { "make-func", new PrimitiveFunction("make-func") },
+                    { "make-action", new PrimitiveFunction("make-action") },
+                    { "throw", new PrimitiveFunction("throw") },
+                    { "try", new PrimitiveFunction("try") },
                 };
         
 

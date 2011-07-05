@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Yalla.Parser.AstObjects;
 
@@ -23,6 +22,7 @@ namespace Yalla.Evaluator
             new Dictionary<string, Func<Applier, IList<object>, Environment, object>>
                 {
                     { "+", (x, y, z) => x.ApplyAdd(y, z) },
+                    { "*", (x, y, z) => x.ApplyMultiply(y, z) },
                     { "=", (x, y, z) => x.ApplyEquals(y, z) },
                     { "<", (x, y, z) => x.ApplyLessThan(y, z) },
                     { "and", (x, y, z) => x.ApplyAnd(y, z) },
@@ -35,7 +35,10 @@ namespace Yalla.Evaluator
                     { "if", (x, y, z) => x.ApplyIf(y, z) },
                     { "let", (x, y, z) => x.ApplyLet(y, z) },
                     { "map", (x, y, z) => x.ApplyMap(y, z) },
-                    { "make-func", (x, y, z) => x.ApplyMakeFunc(y, z)}
+                    { "make-func", (x, y, z) => x.ApplyMakeFunc(y, z) },
+                    { "make-action", (x, y, z) => x.ApplyMakeAction(y, z) },
+                    { "throw", (x, y, z) => x.ApplyThrow(y, z) },
+                    { "try", (x, y, z) => x.ApplyTry(y, z) }
                 };
 
         private readonly Evaluator evaluator;
@@ -128,7 +131,7 @@ namespace Yalla.Evaluator
 
             var args = arguments.Skip(1).Select(x => evaluator.Evaluate(x, environment)).ToList();
             var argTypes = args.Select(x => x.GetType()).ToList();
-
+            
             Type otype = obj.GetType();
             var omethod = otype.GetMethod(method.Name, argTypes.ToArray());
             if (omethod != null)
@@ -230,7 +233,7 @@ namespace Yalla.Evaluator
             
             if (!returnInteger && !args.All(x => x.GetType() == typeof(int) || x.GetType() == typeof(decimal)))
             {
-                throw new ArgumentException("'+' may only take integer or double values!");
+                throw new ArgumentException("'+' may only take integer or decimal values!");
             }
 
             decimal result = 0;
@@ -256,6 +259,40 @@ namespace Yalla.Evaluator
             return result;
         }
 
+        public object ApplyMultiply(IList<object> arguments, Environment environment)
+        {
+            var args = arguments.Select(x => evaluator.Evaluate(x, environment));
+
+            bool returnInteger = args.All(x => x.GetType() == typeof(int));
+
+            if (!returnInteger && !args.All(x => x.GetType() == typeof(int) || x.GetType() == typeof(decimal)))
+            {
+                throw new ArgumentException("'*' may only take integer or decimal values!");
+            }
+
+            decimal result = 1;
+
+            foreach (var arg in args)
+            {
+                if (arg is int)
+                {
+                    result *= (int)arg;
+                }
+
+                if (arg is decimal)
+                {
+                    result *= (decimal)arg;
+                }
+            }
+
+            if (returnInteger)
+            {
+                return (int)Convert.ToInt32(result);
+            }
+
+            return result;
+        }
+        
         public object ApplyAnd(IList<object> arguments, Environment environment)
         {
             foreach (var argument in arguments)
@@ -538,26 +575,86 @@ namespace Yalla.Evaluator
             throw new ArgumentException("First argument to map not a function!");
         }
 
-        private object ApplyMakeFunc(IList<object> objects, Environment environment)
+        private object ApplyMakeFunc(IList<object> arguments, Environment environment)
         {
             /*
-             * (make-func (list (get-list-type lst) System.Boolean) (lambda (x) (= (.Name x) "hej"))
+             * (make-func (list (get-list-type lst) System.Boolean) (lambda (x) (= (.Name x) "hej")))
              * */
-            var types = ((IList<object>)evaluator.Evaluate(objects.First(), environment)).Cast<Type>();
+            var types = ((IList<object>)evaluator.Evaluate(arguments.First(), environment)).Cast<Type>();
 
-            var proc = (ProcedureNode)evaluator.Evaluate(objects.ElementAt(1), environment);
+            var proc = (ProcedureNode)evaluator.Evaluate(arguments.ElementAt(1), environment);
+
+            if (types.Count() == 1)
+            {
+                return FuncFactory.MakeFunc1(types.ElementAt(0), proc, environment, Apply);
+            }
 
             if (types.Count() == 2)
             {
-                return MakeFunc2(types.ElementAt(0), types.ElementAt(1), proc, environment);
+                return FuncFactory.MakeFunc2(types.ElementAt(0), types.ElementAt(1), proc, environment, Apply);
             }
             
             if (types.Count() == 3)
             {
-                return MakeFunc3(types.ElementAt(0), types.ElementAt(1), types.ElementAt(2), proc, environment);
+                return FuncFactory.MakeFunc3(types.ElementAt(0), types.ElementAt(1), types.ElementAt(2), proc, environment, Apply);
             }
 
             throw new ArgumentException("Could not create func of types " + types.Select(x => x.ToString()).Aggregate((s1, s2) => s1 + ", " + s2));
+        }
+
+        private object ApplyMakeAction(IList<object> arguments, Environment environment)
+        {
+            /*
+             * (make-action '(System.String) (lambda (x) (println x)))
+             * */
+            var types = ((IList<object>)evaluator.Evaluate(arguments.First(), environment)).Cast<Type>();
+
+            var proc = (ProcedureNode)evaluator.Evaluate(arguments.ElementAt(1), environment);
+
+            if (types.Count() == 0)
+            {
+                return ActionFactory.MakeAction0(proc, environment, Apply);
+            }
+
+            if (types.Count() == 1)
+            {
+                return ActionFactory.MakeAction1(types.ElementAt(0), proc, environment, Apply);
+            }
+
+            if (types.Count() == 2)
+            {
+                return ActionFactory.MakeAction2(types.ElementAt(0), types.ElementAt(1), proc, environment, Apply);
+            }
+
+            throw new ArgumentException("Could not create action of types " + types.Select(x => x.ToString()).Aggregate((s1, s2) => s1 + ", " + s2));
+        }
+
+        private object ApplyThrow(IList<object> arguments, Environment environment)
+        {
+            /*
+             * (throw (System.Exception. "Something broke!"))
+             */
+            if (arguments.Count != 1)
+            {
+                throw new ArgumentException("Wrong number of arguments given to throw! Expected: 1");
+            }
+
+            var result = evaluator.Evaluate(arguments.First(), environment) as Exception;
+
+            if (result == null)
+            {
+                throw new ArgumentException("Argument given to throw must be a System.Exception or a subclass!");
+            }
+
+            throw result;
+        }
+
+        private object ApplyTry(IList<object> arguments, Environment environment)
+        {
+            /*
+             * (try (throw (System.Exception. "Something broke!")) (catch (System.Exception e) (.Message e)))
+             */
+            throw new NotImplementedException("try function not yet implemented");
         }
 
         private static bool IsLessThan(object left, object right)
@@ -693,38 +790,6 @@ namespace Yalla.Evaluator
             }
 
             throw new ArgumentException("Not comparable types: " + left.GetType() + " and " + right.GetType());
-        }
-
-        private static Func<TArg, TRes> MakeFunc2Generic<TArg, TRes>(Expression<Func<object, object>> func)
-        {
-            var converted = Expression.Convert(func.Body, typeof(TRes));
-
-            return Expression.Lambda<Func<TArg, TRes>>(converted, func.Parameters).Compile();
-        }
-
-        private static Func<TArg1, TArg2, TRes> MakeFunc3Generic<TArg1, TArg2, TRes>(Expression<Func<object, object>> func)
-        {
-            var converted = Expression.Convert(func.Body, typeof(TRes));
-
-            return Expression.Lambda<Func<TArg1, TArg2, TRes>>(converted, func.Parameters).Compile();
-        }
-
-        private object MakeFunc2(Type arg, Type res, ProcedureNode proc, Environment env)
-        {
-            Expression<Func<object, object>> funcExpr = x => Apply(proc, new[] { x }, env);
-
-            var methodInfo = GetType().GetMethod("MakeFunc2Generic", BindingFlags.Static | BindingFlags.NonPublic);
-
-            return methodInfo.MakeGenericMethod(arg, res).Invoke(null, new object[] { funcExpr });
-        }
-
-        private object MakeFunc3(Type arg1, Type arg2, Type res, ProcedureNode proc, Environment env)
-        {
-            Expression<Func<object, object, object>> funcExpr = (x, y) => Apply(proc, new[] { x, y }, env);
-
-            var methodInfo = GetType().GetMethod("MakeFunc3Generic", BindingFlags.Static | BindingFlags.NonPublic);
-
-            return methodInfo.MakeGenericMethod(arg1, arg2, res).Invoke(null, new object[] { funcExpr });
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Yalla.Evaluator
             new Environment(new Dictionary<SymbolNode, object>
                                 {
                                     { new SymbolNode("+"), FunctionNode.PrimitiveFunctions["+"] },
+                                    { new SymbolNode("*"), FunctionNode.PrimitiveFunctions["*"] },
                                     { new SymbolNode("and"), FunctionNode.PrimitiveFunctions["and"] },
                                     { new SymbolNode("or"), FunctionNode.PrimitiveFunctions["or"] },
                                     { new SymbolNode("="), FunctionNode.PrimitiveFunctions["="] },
@@ -28,6 +29,9 @@ namespace Yalla.Evaluator
                                     { new SymbolNode("let"), FunctionNode.PrimitiveFunctions["let"] },
                                     { new SymbolNode("map"), FunctionNode.PrimitiveFunctions["map"] },
                                     { new SymbolNode("make-func"), FunctionNode.PrimitiveFunctions["make-func"] },
+                                    { new SymbolNode("make-action"), FunctionNode.PrimitiveFunctions["make-action"] },
+                                    { new SymbolNode("throw"), FunctionNode.PrimitiveFunctions["throw"] },
+                                    { new SymbolNode("try"), FunctionNode.PrimitiveFunctions["try"] },
                                     { new SymbolNode("nil"), new NilNode() },
                                     { new SymbolNode("true"), AstNode.MakeNode(true) },
                                     { new SymbolNode("false"), AstNode.MakeNode(false) }
